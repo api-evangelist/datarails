@@ -1,0 +1,109 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Datarails FinanceOS MCP Server
+  version: 1.0.0
+extends: openapi/datarails-financeos-mcp-openapi.json
+x-generated: '2026-08-01'
+x-method: generated
+x-source: >-
+  Derived from artifacts already in this repo (mcp/, authentication/, scopes/,
+  rate-limits/, conformance/) plus documentation published by Datarails. The
+  harvested spec at openapi/datarails-financeos-mcp-openapi.json is never
+  mutated; every enhancement below is expressed as an overlay action.
+actions:
+  - target: $.info
+    update:
+      description: >-
+        Public OpenAPI served by the Datarails FinanceOS MCP server at
+        https://mcp.datarails.com/openapi.json. It describes the server's own
+        operational and OAuth endpoints only. The FinanceOS data capability is
+        NOT in this document — it is exposed as 25 MCP tools over JSON-RPC at
+        POST /mcp, which this spec does not declare. See
+        mcp/datarails-tool-crosswalk.yml for the full divergence.
+      contact:
+        name: Datarails Support
+        email: support@datarails.com
+        url: https://support.datarails.com/hc/en-us
+      x-apievangelist-surface: mcp-infrastructure
+      x-apievangelist-data-surface: https://mcp.datarails.com/mcp
+      x-apievangelist-tool-count: 25
+      x-apievangelist-read-only: true
+
+  - target: $
+    update:
+      servers:
+        - url: https://mcp.datarails.com
+          description: >-
+            Production FinanceOS MCP server, hosted in the United States. Added
+            by this overlay; the harvested spec declares no servers[].
+      externalDocs:
+        description: Datarails FinanceOS MCP Server technical documentation
+        url: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+
+  - target: $.components
+    update:
+      securitySchemes:
+        FinanceOSOAuth:
+          type: oauth2
+          description: >-
+            OAuth 2.1 authorization-code with PKCE (S256) and dynamic client
+            registration. Documented at
+            /.well-known/oauth-authorization-server. Added by this overlay —
+            the harvested spec declares no securitySchemes, even though the
+            JSON-RPC surface on the same host is bearer-protected.
+          flows:
+            authorizationCode:
+              authorizationUrl: https://mcp.datarails.com/authorize
+              tokenUrl: https://mcp.datarails.com/token
+              refreshUrl: https://mcp.datarails.com/token
+              scopes:
+                datarails: Access the caller's Datarails FinanceOS data, bounded by their in-app permissions.
+
+  - target: $.paths['/health'].get
+    update:
+      tags: [Operations]
+      description: Liveness probe for the FinanceOS MCP server. Unauthenticated.
+      x-apievangelist-classification: operational
+
+  - target: $.paths['/ready'].get
+    update:
+      tags: [Operations]
+      description: Readiness probe for the FinanceOS MCP server. Unauthenticated.
+      x-apievangelist-classification: operational
+
+  - target: $.paths['/.well-known/oauth-protected-resource'].get
+    update:
+      tags: [Authorization]
+      description: >-
+        RFC 9728 protected-resource metadata. Also served at the
+        resource-scoped path /.well-known/oauth-protected-resource/mcp, which
+        is the location advertised in the 401 WWW-Authenticate challenge.
+      x-apievangelist-standard: RFC 9728
+
+  - target: $.paths['/.well-known/openid-configuration'].get
+    update:
+      tags: [Authorization]
+      description: >-
+        OpenID Connect discovery document. Note that its
+        token_endpoint_auth_methods_supported value ([none]) contradicts the
+        RFC 8414 document served by the same host
+        ([client_secret_post, client_secret_basic]).
+      x-apievangelist-standard: OpenID Connect Discovery 1.0
+      x-apievangelist-deviation: conflicts-with-rfc8414-metadata
+
+  - target: $.paths['/oauth/callback'].get
+    update:
+      tags: [Authorization]
+      description: >-
+        OAuth redirect callback. Datarails documents that this leg must run in
+        a pop-up window; authentication inside an iframe fails or loops.
+      x-apievangelist-standard: RFC 6749
+
+  - target: $.components.schemas.HTTPValidationError
+    update:
+      description: >-
+        FastAPI's default validation envelope. Datarails publishes no RFC 9457
+        application/problem+json responses on any surface. See
+        errors/datarails-problem-types.yml.
+      x-apievangelist-error-format: fastapi-validation
+      x-apievangelist-rfc9457: false

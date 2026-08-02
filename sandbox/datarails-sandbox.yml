@@ -1,0 +1,69 @@
+generated: '2026-08-01'
+method: searched
+source: https://support.datarails.com/hc/en-us/articles/25381443413020-Playground-Organizations-in-Datarails
+description: >-
+  Datarails does provide an isolated non-production environment — the Playground
+  Organization — but it is a training sandbox for the application, not an API
+  test mode. There is NO test-versus-live key separation, no test credentials,
+  no sandbox host, and no magic test values on either API surface. An API caller
+  authenticates against the real tenant; the only isolation available is to
+  point that caller at a playground organization instead of production.
+
+test_live_separation:
+  api_test_mode: false
+  key_prefixes: none
+  sandbox_host: none
+  note: >-
+    The MCP server (mcp.datarails.com) and the Data Gateway Service
+    (app.datarails.com) each have a single production host. No test endpoint is
+    documented.
+
+environments:
+  - name: Playground Organization
+    kind: isolated training organization
+    docs: https://support.datarails.com/hc/en-us/articles/25381443413020-Playground-Organizations-in-Datarails
+    provisioning: Created by an Admin or Super Admin for an eligible user from the Members and Groups admin view.
+    data: Template-based, seeded from the datarails-course.com course template — not a copy of production data.
+    domain_pattern: '[user-email-local-part].[original-domain] (for example john.doe.company.com)'
+    expiry: Default 90 days, with a mandatory future auto-delete date that an admin can adjust.
+    isolation: Solo environment; additional users cannot be added.
+    eligibility:
+      - Requires an FP&A license.
+      - 'Admin, Super Admin or Contributor roles only; Viewers are excluded.'
+    switching: Users can move between the playground and production environments.
+    api_usable: >-
+      Not documented as an API testing target. Because a playground is a
+      separate organization with its own domain, an API or MCP session
+      authenticated into it would exercise that data — but Datarails does not
+      document this as a supported integration-testing path, so it is recorded
+      as an inference, not a published capability.
+    api_usable_confidence: low
+
+test_data:
+  test_cards: not applicable
+  magic_values: none published
+  fixtures: >-
+    The course template supplies the playground's seed data. No fixture or
+    trigger tooling is exposed to API callers.
+  time_simulation: none published
+
+testing_tooling:
+  - name: Postman
+    role: >-
+      The Data Gateway Service documentation is written entirely as a Postman
+      walkthrough — create a POST request, set the Authorization header to
+      "basic <base64>", and send the file as form-data. No public Postman
+      collection is published; the docs describe building the request by hand.
+    docs: https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+  - name: dr-test skill
+    role: >-
+      Datarails' own first-party agent skill that probes which fields are
+      compatible with aggregation and suggests sibling alternatives for fields
+      that fail. The closest thing to a self-test harness on the MCP surface.
+    file: skills/datarails-test.md
+
+gaps:
+  - No API sandbox, test mode, or test credentials.
+  - No published Postman collection or workspace.
+  - No mock server.
+  - Integration counts are a paid plan entitlement, so there is no free tier against which to trial the API.

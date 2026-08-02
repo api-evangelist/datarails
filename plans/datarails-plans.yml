@@ -1,0 +1,51 @@
+generated: '2026-08-01'
+method: searched
+source: https://www.datarails.com/datarails-pricing/
+description: >-
+  Datarails publishes named plan tiers with seat, integration and support
+  entitlements, but no list prices — every tier routes to a custom quote. The
+  FinanceOS AI connector (the MCP server) is listed as included in all three
+  platform tiers, while the support documentation separately describes it as a
+  paid feature that a Customer Success Manager must enable per tenant.
+pricing_model: quote-based
+currency: null
+plan_count: 3
+plans:
+  - name: Professional
+    price: null
+    price_model: custom quote
+    seats: 2
+    integrations: 1
+    support: standard
+  - name: Premium
+    price: null
+    price_model: custom quote
+    seats: 5
+    integrations: 2
+    support: premium
+    highlighted: true
+  - name: Expert
+    price: null
+    price_model: custom quote
+    seats: 15
+    integrations: 3
+    support: premium
+    includes_additional_product: 1
+included_in_all_tiers:
+  - FinanceOS platform
+  - Unlimited dashboards
+  - Reporting
+  - Planning
+  - AI agents
+  - AI connector (FinanceOS MCP)
+add_on_products:
+  - {name: Datarails Spend Control, price: null, price_model: custom quote}
+  - {name: Datarails Cash Management, price: null, price_model: custom quote}
+  - {name: Datarails Month-End Close, price: null, price_model: custom quote}
+notes:
+  - No public list price, no free tier and no self-serve sign-up were found.
+  - 'Integration count is a plan entitlement, which makes the Data Gateway Service API a metered resource rather than an open one.'
+x-evidence:
+  fetched: '2026-08-01'
+  url: https://www.datarails.com/datarails-pricing/
+  http_status: 200

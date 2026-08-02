@@ -1,0 +1,100 @@
+generated: '2026-08-01'
+method: searched
+source: https://mcp.datarails.com/.well-known/oauth-authorization-server
+docs:
+  - https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+  - https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+  - https://support.datarails.com/hc/en-us/articles/10378530614300-Set-up-SSO-authentication
+description: >-
+  Datarails runs two unrelated authentication models across two surfaces. The
+  FinanceOS MCP server uses OAuth 2.1 with PKCE and dynamic client registration
+  (discoverable at RFC 8414 / RFC 9728 well-known endpoints). The Data Gateway
+  Service upload endpoint uses HTTP Basic with the base64 of a Datarails user's
+  username:password — a service account that Datarails documents must not have
+  MFA enabled. Human sign-in to the application supports SAML SSO.
+
+summary:
+  types: [oauth2, http]
+  http_schemes: [basic]
+  oauth2_flows: [authorizationCode]
+  api_key_in: []
+  pkce: [S256]
+  dynamic_client_registration: true
+  sso: [SAML 2.0, Okta, Microsoft Entra ID / Azure AD]
+
+schemes:
+  - name: FinanceOS MCP OAuth 2.1
+    type: oauth2
+    surface: https://mcp.datarails.com/mcp
+    sources:
+      - https://mcp.datarails.com/.well-known/oauth-authorization-server
+      - https://mcp.datarails.com/.well-known/openid-configuration
+      - https://mcp.datarails.com/.well-known/oauth-protected-resource/mcp
+    issuer: https://mcp.datarails.com/
+    flows:
+      - flow: authorizationCode
+        authorizationUrl: https://mcp.datarails.com/authorize
+        tokenUrl: https://mcp.datarails.com/token
+        refreshUrl: https://mcp.datarails.com/token
+        scopes:
+          datarails: Access the caller's Datarails FinanceOS data, subject to their in-app permissions.
+    registration_endpoint: https://mcp.datarails.com/register
+    revocation_endpoint: https://mcp.datarails.com/revoke
+    grant_types_supported: [authorization_code, refresh_token]
+    response_types_supported: [code]
+    code_challenge_methods_supported: [S256]
+    token_endpoint_auth_methods_supported: [client_secret_post, client_secret_basic]
+    bearer_methods_supported: [header]
+    id_token_signing_alg_values_supported: [RS256]
+    notes:
+      - Clients register anonymously; ChatGPT setup instructions explicitly say to leave both OAuth Client ID and Client Secret empty.
+      - Authorization must complete in a pop-up; Datarails documents that the flow fails inside an iframe.
+      - JWT access tokens expire after 5 minutes and are auto-refreshed for aggregation calls.
+      - Tokens are held by the MCP client; Datarails states no credentials are stored in the AI client.
+      - >-
+        The openid-configuration document advertises token_endpoint_auth_methods_supported [none]
+        while the oauth-authorization-server document advertises [client_secret_post,
+        client_secret_basic] for the same endpoints. Recorded as published; the two documents disagree.
+
+  - name: Data Gateway Service HTTP Basic
+    type: http
+    scheme: basic
+    surface: https://app.datarails.com/api/v1/fileboxes/upload_file
+    sources:
+      - https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+    credential_form: 'Authorization: basic <base64(username:password)>'
+    notes:
+      - Credential is a real Datarails user account used as a sync user.
+      - Datarails documents that the sync user must NOT have MFA enabled.
+      - No API-key, token or client-credential alternative is documented for this endpoint.
+      - Per-filebox authorisation is a separate control - the target Filebox must have "Upload via API" enabled and the caller must supply its UUID.
+    weakness_note: >-
+      Long-lived reusable password credentials over HTTP Basic, with MFA
+      required to be off for the account, is the weakest link in the published
+      Datarails auth surface. Recorded as documented, not as a recommendation.
+
+  - name: Application SSO
+    type: saml
+    surface: https://auth.datarails.com/
+    sources:
+      - https://support.datarails.com/hc/en-us/articles/10378530614300-Set-up-SSO-authentication
+      - https://support.datarails.com/hc/en-us/articles/19754261303324-SAML-and-OKTA-SSO-Configuration
+      - https://support.datarails.com/hc/en-us/articles/13816977103772-Microsoft-Azure-SSO-Configuration
+    identity_providers: [Okta, Microsoft Entra ID / Azure AD, generic SAML 2.0]
+    notes:
+      - Human interactive sign-in only; not an API credential.
+      - Datarails notes that an active IdP session is required before the MCP OAuth flow will complete for SSO orgs.
+
+authorization:
+  model: >-
+    The MCP server enforces the caller's existing Datarails permissions
+    server-side. Per Datarails, a user sees only the data they are authorised
+    to access in the tenant, and the MCP connection is read-only.
+  tenant_entitlement: >-
+    FinanceOS AI / MCP access is a paid feature enabled per tenant and per
+    user. Denied callers get "Authentication Denied: It seems like you are not
+    permitted to use this tool."
+  feature_flags:
+    use_semantic_layer_v2: gates the get_business_metric_* data tools (default deny)
+    mcp_use_llm_sql_tool: gates the sql_query tool
+  see: scopes/datarails-scopes.yml

@@ -1,0 +1,71 @@
+generated: '2026-08-01'
+method: probed
+source: https://mcp.datarails.com/mcp (response headers) + Datarails FinanceOS MCP documentation
+description: >-
+  Datarails signals rate limiting on the FinanceOS MCP server with x-ratelimit
+  headers, and separately documents hard result-size ceilings per tool family.
+  The two are different things and both are recorded. No rate limits are
+  documented for the Data Gateway Service upload endpoint.
+
+headers:
+  - name: x-ratelimit-limit
+    observed_value: '120'
+    surface: https://mcp.datarails.com/mcp
+  - name: x-ratelimit-remaining
+    observed_value: '119'
+    surface: https://mcp.datarails.com/mcp
+  - name: x-ratelimit-reset
+    present: false
+    note: No reset header was returned, so the window length is not advertised.
+retry_after: false
+retry_after_note: >-
+  No Retry-After header on rate-limit responses. A retry_after_seconds field
+  does appear inside async poll results, but that is job scheduling, not
+  throttling.
+
+rate_limits:
+  - name: FinanceOS MCP request rate
+    limit_count: 120
+    period: unknown
+    unit: requests
+    scope: per client, inferred from the decrementing x-ratelimit-remaining header
+    surface: https://mcp.datarails.com/mcp
+    method: probed
+    note: The window is not published; only the ceiling is observable.
+
+result_ceilings:
+  - name: Filtered row fetch
+    tools: [get_data_by_alias, get_data_by_id]
+    limit_count: 500
+    unit: rows per page
+    source: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+  - name: Custom query
+    limit_count: 1000
+    unit: rows
+    source: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+    note: 'Documented as "Custom queries: up to 1,000 rows".'
+  - name: Aggregations
+    limit_count: null
+    unit: rows
+    source: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+    note: Documented as having no row limit; this is why Datarails tells agents to prefer aggregation over pagination.
+  - name: Serialized response size
+    limit_count: 100
+    unit: KB (approximate)
+    source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CLAUDE.md
+    behaviour: >-
+      Exceeding it returns HTTP 200 with a truncation envelope
+      {data, truncated, total_rows, returned_rows, guidance} where data is an
+      incomplete prefix.
+
+token_limits:
+  - name: JWT access token lifetime
+    value: 5 minutes
+    behaviour: Auto-refreshed for aggregation; manual refresh required every 20K rows when paginating.
+    source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CLAUDE.md
+
+x-evidence:
+  fetched: '2026-08-01'
+  url: https://mcp.datarails.com/mcp
+  http_status: 401
+  headers_seen: [x-ratelimit-limit, x-ratelimit-remaining, x-request-id, x-trace-id, strict-transport-security]

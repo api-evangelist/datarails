@@ -1,23 +1,183 @@
 aid: datarails
-name: DataRails
-description: 'DataRails is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+name: Datarails
+description: >-
+  Datarails is an Excel-native financial planning and analysis (FP&A) platform
+  for the office of the CFO, marketed as FinanceOS. It consolidates data from
+  ERP, CRM, HRIS, billing and operational systems into a single finance data
+  model, then lets finance teams budget, forecast, consolidate, report and build
+  dashboards while continuing to work in Excel through the Datarails Flex
+  add-in. Its API surface is deliberately narrow and unusually agent-first: the
+  primary programmatic interface is a hosted Model Context Protocol server at
+  mcp.datarails.com, secured with OAuth 2.1 and PKCE, exposing roughly two dozen
+  read-only tools for discovering data models, profiling fields, running
+  filtered queries and asynchronous aggregations, and extracting validated
+  financials into Excel. Datarails also ships a first-party Claude Code plugin
+  carrying nineteen published Agent Skills, plus connectors for ChatGPT,
+  Microsoft 365 Copilot and Lovable. The only documented conventional REST
+  operation is the Data Gateway Service file-upload endpoint used to push CSV
+  and Excel files into a Filebox.
 url: https://raw.githubusercontent.com/api-evangelist/datarails/refs/heads/main/apis.yml
+image: https://www.datarails.com/wp-content/uploads/2024/10/datarails-logo-1.png
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment-pipeline
 specificationVersion: '0.20'
 created: '2026-08-01'
 modified: '2026-08-01'
 tags:
 - Company
-apis: []
+- FP&A
+- Financial Planning
+- Finance
+- Accounting
+- Budgeting
+- Forecasting
+- Business Intelligence
+- Reporting
+- Data Integration
+- Model Context Protocol
+- Artificial Intelligence
+- Excel
+- SaaS
+
+apis:
+- aid: datarails:financeos-mcp
+  name: Datarails FinanceOS MCP Server
+  description: >-
+    Hosted Model Context Protocol server that connects an AI assistant to a
+    tenant's Datarails financial data. Exposes read-only tools for discovering
+    data models and fields, profiling numeric and categorical columns, fetching
+    filtered rows, running asynchronous grouped aggregations, listing business
+    metrics, and generating Excel intelligence workbooks. Authenticated with
+    OAuth 2.1 (authorization code + PKCE, dynamic client registration); access
+    is bounded server-side by the caller's existing Datarails permissions. A
+    paid, per-tenant entitlement.
+  humanURL: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+  baseURL: https://mcp.datarails.com/mcp
+  tags:
+  - Model Context Protocol
+  - Artificial Intelligence
+  - Financial Data
+  - FP&A
+  - OAuth
+  properties:
+  - type: OpenAPI
+    url: openapi/datarails-financeos-mcp-openapi.json
+  - type: MCPServer
+    url: mcp/datarails-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/datarails-tool-crosswalk.yml
+  - type: Overlay
+    url: overlays/datarails-financeos-mcp-overlay.yaml
+  - type: Documentation
+    url: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+  - type: SourceCode
+    url: https://github.com/Datarails/dr-claude-code-plugins-re
+
+- aid: datarails:data-gateway-service
+  name: Datarails Data Gateway Service (DGS)
+  description: >-
+    REST file-upload endpoint used to push a CSV or Excel file into a Datarails
+    Filebox. Authenticated with HTTP Basic using a base64-encoded Datarails sync
+    user (which must not have MFA enabled). The target Filebox must have "Upload
+    via API" enabled and the caller supplies its UUID along with the file,
+    version name and version tags. Documented in prose only; Datarails publishes
+    no OpenAPI for this surface.
+  humanURL: https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+  baseURL: https://app.datarails.com/api/v1
+  tags:
+  - File Upload
+  - Data Integration
+  - Financial Data
+  properties:
+  - type: Documentation
+    url: https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+  - type: Authentication
+    url: authentication/datarails-authentication.yml
+
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+
 common:
 - type: Website
+  url: https://www.datarails.com/
+- type: Integrations
+  url: https://support.datarails.com/hc/en-us/categories/10319624281500-Integrations
+- type: Documentation
+  url: https://support.datarails.com/hc/en-us
+- type: APIReference
+  url: https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+- type: GettingStarted
+  url: https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
+- type: Support
+  url: https://support.datarails.com/hc/en-us
+- type: Blog
+  url: https://www.datarails.com/blog/
+- type: GitHubOrganization
+  url: https://github.com/Datarails
+- type: Pricing
+  url: https://www.datarails.com/datarails-pricing/
+- type: Login
+  url: https://auth.datarails.com/
+- type: PrivacyPolicy
+  url: https://www.datarails.com/privacy-policy/
+- type: TermsOfService
+  url: https://www.datarails.com/terms-of-service/
+- type: AITerms
+  url: https://www.datarails.com/datarails-ai-terms/
+- type: StatusPage
+  url: https://datarails.statuspage.io/
+- type: Compliance
+  url: https://trust.datarails.com/
+- type: TrustCenter
+  url: security/datarails-trust-center.yml
+- type: DomainSecurity
+  url: security/datarails-domain-security.yml
+- type: Authentication
+  url: authentication/datarails-authentication.yml
+- type: OAuthScopes
+  url: scopes/datarails-scopes.yml
+- type: WellKnown
+  url: well-known/datarails-well-known.yml
+- type: LLMsTxt
+  url: llms/datarails-llms.txt
+- type: AgentSkill
+  url: skills/_index.yml
+- type: AgenticAccess
+  url: agentic-access/datarails-agentic-access.yml
+- type: Conventions
+  url: conventions/datarails-conventions.yml
+- type: Conformance
+  url: conformance/datarails-conformance.yml
+- type: ErrorCatalog
+  url: errors/datarails-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/datarails-lifecycle.yml
+- type: ChangeLog
+  url: changelog/datarails-changelog.yml
+- type: DataModel
+  url: data-model/datarails-data-model.yml
+- type: Packages
+  url: packages/datarails-packages.yml
+- type: Components
+  url: components/datarails-components.yml
+- type: RateLimits
+  url: rate-limits/datarails-rate-limits.yml
+- type: Sandbox
+  url: sandbox/datarails-sandbox.yml
+- type: Plans
+  url: plans/datarails-plans.yml
+- type: Integrations
+  url: https://www.datarails.com/integrations/
+- type: SecondaryMarketListing
   url: https://forgeglobal.com/datarails_stock/
+
+x-enrichment:
+  date: '2026-08-01'
+  status: enriched
+  artifacts_added: 58
+  pass: local-v1

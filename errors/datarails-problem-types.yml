@@ -1,0 +1,155 @@
+generated: '2026-08-01'
+method: derived
+source: openapi/datarails-financeos-mcp-openapi.json
+docs:
+  - https://support.datarails.com/hc/en-us/articles/25905041804444-Connect-Datarails-to-ChatGPT
+  - https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
+format: fastapi-validation-error
+rfc9457: false
+description: >-
+  Datarails publishes no error-code registry and no RFC 9457 problem+json
+  envelope. What follows is derived from three real sources: the response
+  objects declared in the FinanceOS MCP OpenAPI, the error bodies observed
+  while probing the live MCP endpoint on 2026-08-01, and the failure modes
+  Datarails documents in its own troubleshooting articles and in the operating
+  contract it ships to its agents. Nothing here is invented; entries without a
+  machine-readable shape are marked as documented-in-prose.
+
+envelopes:
+  - id: fastapi-validation
+    media_type: application/json
+    schema: HTTPValidationError
+    shape: '{"detail": [{"loc": ["string" | 0], "msg": "string", "type": "string"}]}'
+    source: openapi/datarails-financeos-mcp-openapi.json#/components/schemas/HTTPValidationError
+    note: FastAPI's default validation envelope. The only error schema the spec declares.
+  - id: oauth-bearer-error
+    media_type: application/json
+    shape: '{"error": "string", "error_description": "string"}'
+    source: observed on https://mcp.datarails.com/mcp
+    note: >-
+      RFC 6750 style. Accompanied by a WWW-Authenticate Bearer challenge
+      carrying resource_metadata, per RFC 9728.
+
+problems:
+  - status: 422
+    id: validation-error
+    title: Unprocessable Entity - request failed schema validation
+    envelope: fastapi-validation
+    source_operations:
+      - openapi/datarails-financeos-mcp-openapi.json#protected_resource_metadata__well_known_oauth_protected_resource_get
+      - openapi/datarails-financeos-mcp-openapi.json#openid_configuration__well_known_openid_configuration_get
+      - openapi/datarails-financeos-mcp-openapi.json#oauth_callback_oauth_callback_get
+    remediation: Correct the offending parameter named in detail[].loc.
+    method: derived
+
+  - status: 401
+    id: invalid_token
+    title: Authentication required
+    envelope: oauth-bearer-error
+    observed_body: '{"error": "invalid_token", "error_description": "Authentication required"}'
+    www_authenticate: >-
+      Bearer error="invalid_token", error_description="Authentication required",
+      resource_metadata="https://mcp.datarails.com/.well-known/oauth-protected-resource/mcp"
+    surface: POST https://mcp.datarails.com/mcp
+    remediation: >-
+      Run the OAuth 2.1 authorization-code + PKCE flow against the authorization
+      server advertised in the resource_metadata document, then retry with a
+      bearer token. Access tokens expire after 5 minutes.
+    method: probed
+    x-evidence:
+      fetched: '2026-08-01'
+      url: https://mcp.datarails.com/mcp
+      http_status: 401
+
+  - status: 401
+    id: token-expired-mid-session
+    title: Session expired during a conversation
+    envelope: oauth-bearer-error
+    documented_in_prose: true
+    source: https://support.datarails.com/hc/en-us/articles/25905041804444-Connect-Datarails-to-ChatGPT
+    description: >-
+      "OAuth tokens expire after a period of inactivity" - a working agent
+      session stops returning results partway through.
+    remediation: Start a new session and reactivate the connector, or disconnect and reconnect it.
+    method: searched
+
+  - status: 403
+    id: authentication-denied-not-entitled
+    title: 'Authentication Denied: It seems like you are not permitted to use this tool'
+    documented_in_prose: true
+    source: https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
+    description: >-
+      The caller authenticated successfully but the tenant or user is not
+      entitled to the FinanceOS AI connector (a paid feature).
+    remediation: The customer's CSM must enable AI-platform connection for that user.
+    method: searched
+    note: >-
+      Datarails publishes the message verbatim but not the HTTP status; 403 is
+      inferred from the semantics and is marked as such.
+    status_inferred: true
+
+  - status: 500
+    id: field-incompatible-with-aggregation
+    title: Per-client field failure on aggregation
+    documented_in_prose: true
+    source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CLAUDE.md
+    description: >-
+      "Some fields fail per-client (500 errors)." Datarails treats this as an
+      expected, discoverable condition rather than an outage.
+    remediation: >-
+      Discover lazily and retry reactively - re-inspect the schema for a sibling
+      field and retry. The dr-test skill produces the compatibility map up front.
+    method: searched
+
+  - status: 500
+    id: count-of-grouped-field
+    title: COUNT aggregation targeting the same field being grouped by
+    documented_in_prose: true
+    source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CHANGELOG.md
+    description: >-
+      Live-verified in Datarails' own 2026-07 audit - a same-field COUNT of a
+      grouped dimension returns HTTP 500.
+    remediation: Target COUNT at a different dense field.
+    method: searched
+
+  - status: 200
+    id: result-truncated
+    title: Result truncated at the serialization cap (not an HTTP error)
+    documented_in_prose: true
+    source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CLAUDE.md
+    shape: '{data, truncated: true, total_rows, returned_rows, guidance}'
+    description: >-
+      The server caps serialized results at roughly 100 KB and returns a success
+      status with a partial data prefix. This is the most dangerous failure mode
+      on the surface because it does not look like a failure - computing totals,
+      shares or trends from the prefix silently produces wrong financials.
+    remediation: Follow the guidance field - narrow the query or use a business metric - and re-fetch.
+    method: searched
+
+  - status: 400
+    id: expired-async-handle
+    title: Expired async handle
+    documented_in_prose: true
+    source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CLAUDE.md
+    description: >-
+      A get_aggregation_result_* / get_distinct_values_result_* poll against a
+      handle that has expired.
+    remediation: Restart the job with the matching start_* tool.
+    method: searched
+    status_inferred: true
+
+non_error_states:
+  - id: pending
+    shape: '{"status": "pending", "handle": "..."}'
+    note: Returned by every start_* tool. Not an error.
+  - id: running
+    shape: '{"status": "running", "retry_after_seconds": n}'
+    note: >-
+      Returned by the poll tools while a job is in flight. Datarails explicitly
+      instructs callers that this is not an error - poll again.
+
+gaps:
+  - No published error-code registry or catalogue page.
+  - No RFC 9457 application/problem+json responses on any surface.
+  - The DGS upload endpoint (POST /api/v1/fileboxes/upload_file) documents no error responses at all.
+  - The MCP OpenAPI declares no 4xx responses beyond FastAPI's automatic 422.

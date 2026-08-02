@@ -1,0 +1,162 @@
+generated: '2026-08-01'
+method: searched
+source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CLAUDE.md
+docs:
+  - https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+  - https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+description: >-
+  Cross-cutting request/response semantics for the two Datarails API surfaces.
+  Most of this is unusually well documented for an FP&A vendor, because
+  Datarails publishes the operating contract its own agents follow (CLAUDE.md
+  in the public plugin repository) rather than only a narrative docs page.
+
+authentication:
+  mcp: OAuth 2.1 authorization-code + PKCE (S256), bearer token in the Authorization header
+  dgs_upload: HTTP Basic, base64(username:password)
+  see: authentication/datarails-authentication.yml
+
+idempotency:
+  supported: false
+  header: null
+  assessment: >-
+    Datarails documents no idempotency key on either surface. It is a weak but
+    defensible position: the MCP surface is read-only (so every tool call is
+    naturally idempotent), and the one documented write path — the DGS filebox
+    upload — has no dedupe mechanism at all. A retried upload therefore creates
+    another file version. Datarails mitigates this with version tags rather
+    than with an idempotency key.
+  natural_idempotency:
+    mcp_tools: >-
+      All 25 published MCP tools are reads (discovery, profiling, query,
+      aggregation). Repeat calls are side-effect free by construction.
+    async_start_poll: >-
+      The async aggregation and distinct-values tools return a handle from
+      start_*; polling get_*_result_* with the same handle is repeatable until
+      the handle expires. An expired handle is not retried in place — the
+      caller restarts with start_*.
+  write_path_note: >-
+    POST /api/v1/fileboxes/upload_file accepts version_name and version_tags
+    (a JSON object naming the date the file is tagged into). Re-posting the
+    same version_name and version_tags is the closest thing to a dedupe key
+    Datarails documents, but it is not specified as idempotent.
+
+pagination:
+  style: limit-based page fetch
+  surface: MCP get_data_by_alias / get_data_by_id
+  max_page_size: 500
+  custom_query_max_rows: 1000
+  aggregation_row_limit: none
+  guidance: >-
+    Datarails' own contract tells agents to prefer aggregation over pagination:
+    "aggregation (start_aggregation_by_* -> get_aggregation_result_by_*,
+    non-blocking start-poll, typically seconds, no row limit) is the default
+    for summaries and totals. Page raw rows only when you need individual
+    records."
+  token_refresh: JWT expires in 5 minutes; manual refresh required every 20K rows when paginating.
+
+async_semantics:
+  pattern: start -> poll
+  introduced: plugin v3.0.5 / MCP v3.1 (2026-07-12)
+  pairs:
+    - start: start_aggregation_by_alias
+      poll: get_aggregation_result_by_alias
+    - start: start_aggregation_by_id
+      poll: get_aggregation_result_by_id
+    - start: start_distinct_values_by_alias
+      poll: get_distinct_values_result_by_alias
+    - start: start_distinct_values_by_id
+      poll: get_distinct_values_result_by_id
+  contract:
+    - 'start_* takes the same arguments as its deprecated blocking twin and returns {status: "pending", handle}.'
+    - Echo the handle to the matching result tool.
+    - 'status: "running" plus retry_after_seconds means poll again — it is not an error.'
+    - For distinct values the limit argument moves from the start tool to the result tool.
+    - An expired-handle error is recovered by restarting with start_*.
+  backward_compatibility: >-
+    The four blocking tools are hidden from tools/list but remain callable, so
+    clients work on both sides of a server deploy.
+
+response_shaping:
+  truncation_envelope:
+    trigger: serialized result exceeds roughly 100 KB
+    shape: '{data, truncated: true, total_rows, returned_rows, guidance}'
+    contract: >-
+      When truncated is true the data array is an incomplete PREFIX. Datarails
+      instructs callers never to compute totals, shares or trends from it —
+      follow the guidance field (narrow the query, or use a business metric)
+      and re-fetch.
+  grand_total_row: >-
+    Every GROUP BY response appends a keyless grand-total row. It must be
+    excluded from sums, shares and trends or every aggregate double-counts.
+  null_bucket: Nulls arrive as an explicit [null] bucket rather than being dropped.
+  profiling_layout: >-
+    profile_numeric_fields relays the backend-native DR_Values / col_keys /
+    row_keys layout — values are duplicated per statistic with no per-value
+    aggregator label, so callers must key-map each value to its statistic
+    before labelling anything MIN/MAX/AVG/COUNT.
+
+filtering:
+  simple:
+    by_alias: '{"name": <field_alias>, "values": [...], "is_excluded": false}'
+    by_id: '{"field_id": <field_id>, "values": [...]}'
+    negation: 'is_excluded: true turns a value list into NOT IN'
+  advanced:
+    shape: '{"name": <field>, "values": {"type": "advanced", "val": [{"condition": <op>, "value": [...]}]}}'
+    conditions: [equals, dn_equals, contains, dn_contains, bw, ew, gt, gte, lt, lte, in, range, total_range, 'is null']
+    dates: >-
+      Date columns filter directly with total_range (inclusive between) over
+      epoch values passed as strings; the backend casts per field.
+
+field_addressing:
+  layers:
+    - layer: business metrics
+      tools: [list_business_metrics, get_business_metric_data]
+      use_when: Named KPIs — revenue, margin, expenses, budget variance, headcount, ratios.
+      gated: partially (data tools behind use_semantic_layer_v2)
+    - layer: aliased tables
+      tools: [list_aliased_fields, get_data_by_alias, start_aggregation_by_alias, start_distinct_values_by_alias]
+      use_when: Preferred raw-data path — friendly names, roughly 95% fewer tokens.
+      caveat: A table alias does NOT imply its fields are aliased; alias choice is per field.
+    - layer: raw by-id
+      tools: [get_fields_by_id, get_data_by_id, start_aggregation_by_id, start_distinct_values_by_id]
+      use_when: Tables without an alias, or when an alias call fails. Always works.
+  entry_point: list_data_models returns both the numeric id and the alias for every table.
+
+error_envelope:
+  mcp_transport: JSON-RPC 2.0 over streamable HTTP
+  auth_error: '{"error": "invalid_token", "error_description": "Authentication required"} with HTTP 401 and a WWW-Authenticate Bearer challenge carrying resource_metadata'
+  openapi_validation: 'HTTPValidationError — {"detail": [{"loc": [...], "msg": "...", "type": "..."}]} at HTTP 422 (FastAPI default, not RFC 9457)'
+  rfc9457: false
+  per_field_500s: >-
+    Datarails documents that some fields fail per-client with HTTP 500 on
+    aggregation, and instructs callers to discover lazily and retry reactively
+    against a sibling field rather than treating it as a hard failure.
+  see: errors/datarails-problem-types.yml
+
+versioning:
+  scheme: server version in the OpenAPI info.version; MCP tool surface versioned by the plugin's semver
+  current_server: 3.0.0
+  current_plugin: 3.0.6
+  dgs_rest: URI path (/api/v1/)
+  breaking_change_practice: >-
+    Tool renames are shipped with a documented old -> new mapping that the
+    server continues to honour, and deprecated tools are hidden from tools/list
+    while remaining callable.
+  see: lifecycle/datarails-lifecycle.yml
+
+rate_limits:
+  observed_header: 'x-ratelimit-limit: 120 (x-ratelimit-remaining decremented per request)'
+  documented_limits:
+    filtered_rows: 500
+    custom_query_rows: 1000
+    aggregations: unlimited
+  see: rate-limits/datarails-rate-limits.yml
+
+tracing:
+  headers_observed: [x-request-id, x-trace-id]
+  example_trace_prefix: 'mcp_'
+  note: Both headers are returned on MCP responses, including the anonymous 401.
+
+metadata:
+  supported: false
+  note: No customer-defined metadata field is documented on either surface.

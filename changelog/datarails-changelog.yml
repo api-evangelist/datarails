@@ -1,0 +1,87 @@
+generated: '2026-08-01'
+method: searched
+source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CHANGELOG.md
+url: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CHANGELOG.md
+format: Keep a Changelog
+description: >-
+  Datarails' only public dated changelog covers the FinanceOS Claude Code
+  plugin, and by extension the MCP tool surface the plugin calls. There is no
+  public changelog for the Datarails platform or for the Data Gateway Service
+  REST endpoint. Recent window only — full history is in the repository.
+
+scheme: semver
+current_version: 3.0.6
+current_version_date: '2026-07-13'
+scope: Claude Code plugin datarails-financeos and, indirectly, the FinanceOS MCP tool surface
+
+entries:
+  - version: 3.0.6
+    date: '2026-07-13'
+    breaking: false
+    highlights:
+      - README rewritten after the documented slash-command form was found to be non-resolving — Claude Code invokes a plugin skill as /<plugin>:<folder>, so /dr-tables became /datarails-financeos:tables.
+      - Same invocation fix applied to SETUP.md and the getting-started guide.
+      - Four redundant command launchers removed because they double-registered the same slash as an identically named skill.
+
+  - version: 3.0.5
+    date: '2026-07-12'
+    breaking: true
+    breaking_note: >-
+      The MCP server replaced its four blocking fetch tools with async
+      start -> poll pairs and hid the blocking tools from tools/list (they
+      remain callable). Clients written against the blocking tools keep
+      working, but the documented surface changed.
+    additions:
+      - start_aggregation_by_id / _by_alias with get_aggregation_result_by_id / _by_alias.
+      - start_distinct_values_by_id / _by_alias with get_distinct_values_result_by_id / _by_alias.
+      - Truncation envelope documented — {data, truncated, total_rows, returned_rows, guidance} at a ~100 KB serialization cap.
+    highlights:
+      - Roughly 130 call sites migrated across 19 public skills and 8 agents.
+      - Transitional fallback so the plugin behaves correctly on both sides of the server deploy.
+
+  - version: 3.0.4
+    date: '2026-07-05'
+    breaking: false
+    highlights:
+      - Documentation audit aligning public docs to shipped v3.0.3 behaviour.
+      - The audit skill re-described as an audit-support evidence package rather than a SOX compliance audit.
+
+  - version: 3.0.3
+    date: '2026-07-05'
+    breaking: false
+    highlights:
+      - Data-scope preamble added to every aggregating skill after a live production audit — discover the scenario domain, discover the account grain, default to the latest complete fiscal year, and exclude the keyless grand-total row from sums.
+      - KPI honesty rule added — SaaS metrics (ARR, MRR, churn, LTV, CAC, burn, runway, NRR) are not derivable from a P&L table and are omitted rather than fabricated.
+      - Reconciliation engine replaced after it was found to be circular (both sides derived from the same aggregate, so every line reconciled to 0% by construction).
+      - Audit skill re-scoped to data-evidencable checks after it was found to promise SOX control tests no MCP tool can substantiate.
+
+  - version: 3.0.2
+    date: '2026-07-01'
+    breaking: false
+    highlights:
+      - Excel Add-In bridge skills made internal and stripped from the public mirror.
+
+  - version: 3.0.1
+    date: '2026-07-01'
+    breaking: false
+    highlights:
+      - Alias-to-by-id fallback strengthened after live testing found a mapped table exposed only about 5 aliased fields out of about 185, none of them load-bearing.
+      - Backward-compatibility mapping for retired MCP tool names added.
+
+  - version: 3.0.0
+    date: '2026-06-23'
+    breaking: true
+    breaking_note: >-
+      The MCP server consolidated to a three-layer model and renamed or removed
+      much of its tool surface. Retired names remain mapped, so callers are
+      asked to translate rather than break.
+    highlights:
+      - Tool surface reorganised into business-metrics, aliased-table and raw by-id layers.
+      - Aliased layer adopted as the preferred raw-data path (friendlier names, roughly 95% fewer tokens).
+      - profile_table_summary, detect_anomalies and execute_query removed.
+    see: lifecycle/datarails-lifecycle.yml
+
+gaps:
+  - No changelog or release notes for the Datarails platform itself.
+  - No changelog for the Data Gateway Service REST endpoint.
+  - The MCP server's own version (3.0.0 in its OpenAPI) is not separately changelogged; server changes are visible only through the plugin's notes.

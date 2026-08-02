@@ -1,0 +1,202 @@
+generated: '2026-08-01'
+method: searched
+source: >-
+  https://mcp.datarails.com/.well-known/oauth-authorization-server,
+  https://mcp.datarails.com/openapi.json, and Datarails published documentation
+description: >-
+  Which cross-cutting and industry standards the Datarails API surfaces
+  genuinely conform to, each with the evidence that establishes it. Datarails is
+  strong on the agent/authorization standards stack (MCP, OAuth 2.1, PKCE,
+  RFC 8414, RFC 9728, dynamic client registration) and absent on the API
+  hygiene standards (no RFC 9457, no RFC 9116, no RFC 8594, no API catalog).
+
+standards:
+  - id: model-context-protocol
+    name: Model Context Protocol
+    conforms: true
+    evidence: >-
+      Hosted streamable-HTTP MCP server at https://mcp.datarails.com/mcp, with a
+      documented install path for Claude Code, Claude Desktop, Claude.ai,
+      ChatGPT and Lovable. Anonymous tools/list returns a spec-correct 401 with
+      a WWW-Authenticate Bearer challenge carrying resource_metadata.
+    method: probed
+
+  - id: oauth2
+    name: OAuth 2.0 / 2.1 authorization framework
+    conforms: true
+    evidence: >-
+      authorization_endpoint, token_endpoint and revocation_endpoint published
+      at https://mcp.datarails.com/.well-known/oauth-authorization-server;
+      grant_types_supported [authorization_code, refresh_token].
+    method: probed
+
+  - id: rfc7636-pkce
+    name: 'RFC 7636 — Proof Key for Code Exchange'
+    conforms: true
+    evidence: 'code_challenge_methods_supported: [S256] in both discovery documents.'
+    method: probed
+
+  - id: rfc8414-as-metadata
+    name: 'RFC 8414 — OAuth 2.0 Authorization Server Metadata'
+    conforms: true
+    evidence: '200 at /.well-known/oauth-authorization-server; saved to well-known/datarails-oauth-authorization-server.json'
+    method: probed
+
+  - id: rfc9728-protected-resource-metadata
+    name: 'RFC 9728 — OAuth 2.0 Protected Resource Metadata'
+    conforms: true
+    evidence: >-
+      200 at /.well-known/oauth-protected-resource and at the resource-scoped
+      /.well-known/oauth-protected-resource/mcp, the latter advertised in the
+      401 WWW-Authenticate header exactly as the RFC prescribes.
+    method: probed
+
+  - id: rfc7591-dynamic-client-registration
+    name: 'RFC 7591 — OAuth 2.0 Dynamic Client Registration'
+    conforms: true
+    evidence: >-
+      registration_endpoint https://mcp.datarails.com/register is published, and
+      Datarails instructs ChatGPT users to leave client id and secret empty.
+    method: probed
+
+  - id: oidc-discovery
+    name: OpenID Connect Discovery 1.0
+    conforms: partial
+    evidence: >-
+      /.well-known/openid-configuration returns 200 with issuer, endpoints and
+      id_token_signing_alg_values_supported [RS256]. It omits jwks_uri and
+      userinfo_endpoint, and its token_endpoint_auth_methods_supported [none]
+      contradicts the [client_secret_post, client_secret_basic] published in the
+      RFC 8414 document for the same endpoint.
+    method: probed
+
+  - id: rfc6750-bearer
+    name: 'RFC 6750 — Bearer Token Usage'
+    conforms: true
+    evidence: 'bearer_methods_supported [header]; observed error body {"error": "invalid_token", "error_description": "..."}'
+    method: probed
+
+  - id: openapi
+    name: OpenAPI Specification
+    conforms: partial
+    evidence: >-
+      A real OpenAPI 3.1.0 document is served at
+      https://mcp.datarails.com/openapi.json, but it covers only the MCP
+      server's own health, readiness, OAuth discovery and callback endpoints —
+      5 operations, no servers[], no securitySchemes, no tags, no summaries
+      beyond the FastAPI defaults. No OpenAPI exists for the FinanceOS data
+      surface or for the Data Gateway Service upload endpoint.
+    method: searched
+
+  - id: saml2
+    name: SAML 2.0 single sign-on
+    conforms: true
+    evidence: >-
+      Documented SSO configuration for Okta, Microsoft Entra ID / Azure AD and
+      generic SAML at support.datarails.com.
+    method: searched
+
+  - id: odata
+    name: OData
+    conforms: partial
+    evidence: >-
+      Datarails consumes OData as an inbound integration method (connecting to a
+      customer-exposed OData URL secured with basic authentication) but does not
+      expose an OData service of its own.
+    method: searched
+
+  - id: soc2-type2
+    name: SOC 2 Type II
+    conforms: true
+    evidence: 'Datarails states "Datarails is SOC 2 Type II, GDPR, and ISO 27001 certified" in its Claude Desktop setup documentation. See security/datarails-trust-center.yml.'
+    method: searched
+
+  - id: iso27001
+    name: ISO/IEC 27001
+    conforms: true
+    evidence: Same provider statement as SOC 2 Type II.
+    method: searched
+
+  - id: gdpr
+    name: GDPR
+    conforms: true
+    evidence: >-
+      Provider statement plus a published privacy policy (updated 2026-03-23)
+      naming compliance@datarails.com and describing incident notification.
+    method: searched
+
+  - id: rfc9457-problem-details
+    name: 'RFC 9457 — Problem Details for HTTP APIs'
+    conforms: false
+    evidence: >-
+      No application/problem+json anywhere. Errors use FastAPI's
+      HTTPValidationError envelope and RFC 6750 OAuth error bodies.
+
+  - id: rfc9116-security-txt
+    name: 'RFC 9116 — security.txt'
+    conforms: false
+    evidence: '404 at /.well-known/security.txt on every Datarails host probed.'
+
+  - id: rfc8594-sunset-header
+    name: 'RFC 8594 — Sunset HTTP header'
+    conforms: false
+    evidence: >-
+      No Sunset or Deprecation headers observed and no written deprecation
+      policy, although Datarails does run a real tool-deprecation practice.
+
+  - id: rfc9727-api-catalog
+    name: 'RFC 9727 — /.well-known/api-catalog'
+    conforms: false
+    evidence: 404 on every host probed.
+
+  - id: a2a
+    name: A2A Agent Card
+    conforms: false
+    evidence: >-
+      404 at both /.well-known/agent-card.json and /.well-known/agent.json on
+      mcp, app, www and apex hosts. No card is published.
+
+  - id: asyncapi
+    name: AsyncAPI
+    conforms: not-applicable
+    evidence: >-
+      Datarails publishes no event, streaming or webhook surface. A help-center
+      search for "webhook" returns zero articles. There is no event contract to
+      describe, so the absence of AsyncAPI is not a gap.
+
+  - id: idempotency-key
+    name: Idempotency-Key header
+    conforms: false
+    evidence: >-
+      No idempotency key documented on either surface. The MCP surface is
+      read-only so its calls are naturally idempotent, but the one documented
+      write path (DGS filebox upload) has no dedupe mechanism.
+    see: conventions/datarails-conventions.yml
+
+  - id: json-schema
+    name: JSON Schema
+    conforms: partial
+    evidence: >-
+      The OpenAPI 3.1.0 document uses JSON Schema 2020-12 for its two component
+      schemas. MCP tool inputSchemas exist by protocol requirement but are
+      OAuth-gated and could not be captured anonymously.
+
+  - id: fhir
+    name: HL7 FHIR
+    conforms: false
+  - id: fapi
+    name: 'FAPI (Financial-grade API)'
+    conforms: false
+    evidence: >-
+      Datarails is an FP&A platform rather than a regulated financial-data
+      provider; no FAPI security profile, mTLS or PAR is advertised.
+  - id: scim
+    name: 'SCIM 2.0'
+    conforms: false
+    evidence: SAML SSO is documented; no SCIM provisioning endpoint was found.
+  - id: psd2
+    name: PSD2
+    conforms: false
+  - id: json-api
+    name: 'JSON:API'
+    conforms: false

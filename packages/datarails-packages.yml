@@ -1,0 +1,102 @@
+generated: '2026-08-01'
+method: searched
+source: npm registry, PyPI, RubyGems, crates.io, and the Datarails GitHub organization
+description: >-
+  Datarails publishes NO API client SDK in any language. What it does publish
+  is first-party npm packages for its own front-end (charts, icons, shared
+  components) and a first-party Claude Code plugin that packages the FinanceOS
+  MCP connector plus 19 Agent Skills. The plugin is the closest thing Datarails
+  ships to an official client, and it is distributed through GitHub rather than
+  a language package registry.
+
+registries_searched:
+  - {registry: npm, query: datarails, result: 3 first-party packages under the @datarailsshared scope}
+  - {registry: pypi, query: datarails, result: 'name taken by an unrelated third-party ETL library'}
+  - {registry: rubygems, query: datarails, result: 404}
+  - {registry: crates.io, query: datarails, result: 0}
+  - {registry: 'Maven Central', query: datarails, result: none found}
+  - {registry: NuGet, query: datarails, result: none found}
+  - {registry: 'pkg.go.dev', query: datarails, result: none found}
+
+api_client_sdks: []
+api_client_sdk_note: >-
+  No official or community client library exists for either the FinanceOS MCP
+  server or the Data Gateway Service upload endpoint. MCP clients speak the
+  protocol directly; DGS callers are told to use Postman or hand-rolled HTTP.
+
+packages:
+  - language: javascript
+    registry: npm
+    name: '@datarailsshared/dr_renderer'
+    version: 1.5.217
+    published: '2026-03-02'
+    url: https://www.npmjs.com/package/@datarailsshared/dr_renderer
+    install: npm install @datarailsshared/dr_renderer
+    repository: https://github.com/Datarails/dr_renderer
+    description: DataRails charts and tables renderer.
+    official: true
+    official_evidence: Published by the datarails.publisher npm account; repository under github.com/Datarails.
+    kind: ui-component-library
+    api_client: false
+
+  - language: javascript
+    registry: npm
+    name: '@datarailsshared/datarailsshared'
+    version: 1.6.418
+    published: '2026-03-10'
+    url: https://www.npmjs.com/package/@datarailsshared/datarailsshared
+    install: npm install @datarailsshared/datarailsshared
+    repository: https://bitbucket.org/datarails/datarailsshared
+    description: DataRails shared components.
+    official: true
+    kind: ui-component-library
+    api_client: false
+
+  - language: javascript
+    registry: npm
+    name: '@datarailsshared/dr_icons'
+    version: 1.0.244
+    published: '2026-05-06'
+    url: https://www.npmjs.com/package/@datarailsshared/dr_icons
+    install: npm install @datarailsshared/dr_icons
+    repository: https://github.com/Datarails/dr_icons
+    description: Icon set exported from Figma.
+    official: true
+    kind: asset-library
+    api_client: false
+
+distributions:
+  - name: datarails-financeos
+    kind: claude-code-plugin
+    version: 3.0.6
+    license: MIT
+    registry: GitHub plugin marketplace (datarails-marketplace)
+    url: https://github.com/Datarails/dr-claude-code-plugins-re
+    install: 'Add the marketplace Datarails/dr-claude-code-plugins-re in Claude Code, then install the datarails-financeos plugin'
+    contents: 19 Agent Skills, 8 agents, 4 commands, and the datarails-finance-os MCP server binding
+    official: true
+    api_client: true
+    note: >-
+      The only first-party package that actually calls the Datarails API. It is
+      an agent plugin, not a language SDK, so it does not satisfy a
+      conventional SDK-count check — recorded as what it is.
+    see: skills/_index.yml
+
+not_first_party:
+  - registry: pypi
+    name: datarails
+    url: https://pypi.org/project/datarails/
+    version: 0.3.3
+    description: 'A simple lightweight library for Dataframe based ETL pipelines'
+    owner: JesseMaitland
+    repository: https://github.com/JesseMaitland/datarails
+    official: false
+    note: >-
+      Unrelated to Datarails the company despite the exact name match. Recorded
+      here so a later pass does not mistake it for a first-party SDK.
+
+other_org_repos:
+  - name: Datarails/mcp-outlet
+    url: https://github.com/Datarails/mcp-outlet
+    language: TypeScript
+    note: Public repository in the Datarails GitHub organization; not published to npm.

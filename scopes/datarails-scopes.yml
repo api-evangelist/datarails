@@ -1,0 +1,51 @@
+generated: '2026-08-01'
+method: searched
+source: https://mcp.datarails.com/.well-known/oauth-authorization-server
+docs: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+description: >-
+  Datarails publishes exactly one OAuth scope. The FinanceOS MCP authorization
+  server advertises scopes_supported ["datarails"] in both its RFC 8414 and its
+  OIDC discovery documents — a single coarse scope that grants an agent the
+  caller's whole readable FinanceOS surface. There is no read/write split, no
+  per-table scope and no per-tool scope; granularity is delegated entirely to
+  the tenant's in-app permission model and to per-tenant feature flags.
+
+schemes:
+  - name: FinanceOS MCP OAuth 2.1
+    source: https://mcp.datarails.com/.well-known/oauth-authorization-server
+    issuer: https://mcp.datarails.com/
+    flows:
+      - flow: authorizationCode
+        authorizationUrl: https://mcp.datarails.com/authorize
+        tokenUrl: https://mcp.datarails.com/token
+
+scopes:
+  - scope: datarails
+    description: >-
+      Access the authenticated user's Datarails FinanceOS data through the MCP
+      server. Read-only in effect: Datarails documents that the MCP connection
+      cannot create, update or delete records. Effective reach is bounded by
+      the user's existing Datarails permissions, enforced server-side.
+    flows: [authorizationCode]
+    sources:
+      - https://mcp.datarails.com/.well-known/oauth-authorization-server
+      - https://mcp.datarails.com/.well-known/openid-configuration
+
+granularity:
+  scope_count: 1
+  read_write_split: false
+  resource_indicators: false
+  effective_controls:
+    - control: tenant entitlement
+      description: FinanceOS AI connector must be enabled for the tenant and the user (paid feature, gated by the CSM).
+    - control: in-app permissions
+      description: Server-side enforcement of the caller's existing Datarails data-access permissions.
+    - control: feature flag use_semantic_layer_v2
+      description: Default-deny gate on the get_business_metric_* data tools.
+    - control: feature flag mcp_use_llm_sql_tool
+      description: Gate on the free-form sql_query tool.
+  assessment: >-
+    A single scope means an agent-consent screen cannot express least
+    privilege — a user granting "datarails" grants every readable table. The
+    real least-privilege boundary lives outside OAuth, in Datarails' own
+    permission model.

@@ -1,0 +1,120 @@
+generated: '2026-08-01'
+method: searched
+source: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CHANGELOG.md
+description: >-
+  Versioning, deprecation and operational-transparency posture across the
+  Datarails API surfaces. Datarails runs a genuine deprecation practice on its
+  MCP tool surface — retired tool names are kept callable and published with an
+  old -> new mapping — but it does not publish a written deprecation policy,
+  a sunset-header contract or an SLA.
+
+versioning:
+  mcp_server:
+    scheme: semver, exposed as info.version in the public OpenAPI
+    current: 3.0.0
+    source: openapi/datarails-financeos-mcp-openapi.json
+  mcp_plugin:
+    scheme: semver in .claude-plugin/plugin.json
+    current: 3.0.6
+    released: '2026-07-13'
+    source: https://github.com/Datarails/dr-claude-code-plugins-re
+  dgs_rest:
+    scheme: uri-path
+    current: v1
+    example: https://app.datarails.com/api/v1/fileboxes/upload_file
+    source: https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
+  breaking_change_practice: >-
+    The v3.0.0 tool consolidation (2026-06-23) renamed or removed a large part
+    of the tool surface. Datarails shipped a published old -> new mapping table
+    and instructs clients to map retired names silently rather than report them
+    as missing.
+
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  practice: >-
+    Deprecated tools are hidden from tools/list but remain callable, and every
+    retired name keeps a documented current equivalent. This is a real
+    deprecation practice with no written policy behind it.
+  deprecated_tools:
+    - name: get_aggregated_data_by_id
+      superseded_by: [start_aggregation_by_id, get_aggregation_result_by_id]
+      since: MCP v3.1 / plugin 3.0.5 (2026-07-12)
+      still_callable: true
+    - name: get_aggregated_data_by_alias
+      superseded_by: [start_aggregation_by_alias, get_aggregation_result_by_alias]
+      since: MCP v3.1 / plugin 3.0.5 (2026-07-12)
+      still_callable: true
+    - name: get_distinct_values_by_id
+      superseded_by: [start_distinct_values_by_id, get_distinct_values_result_by_id]
+      since: MCP v3.1 / plugin 3.0.5 (2026-07-12)
+      still_callable: true
+    - name: get_distinct_values_by_alias
+      superseded_by: [start_distinct_values_by_alias, get_distinct_values_result_by_alias]
+      since: MCP v3.1 / plugin 3.0.5 (2026-07-12)
+      still_callable: true
+  retired_tools:
+    - {name: list_finance_tables, replacement: list_data_models, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_table_schema, replacement: get_fields_by_id, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_field_distinct_values, replacement: get_distinct_values_by_id, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_records_by_filter, replacement: get_data_by_id, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_sample_records, replacement: get_data_by_id, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: aggregate_table_data, replacement: get_aggregated_data_by_id, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: list_semantic_tables, replacement: list_aliased_fields, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_semantic_table_schema, replacement: list_aliased_fields, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: semantic_query, replacement: get_data_by_alias, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: semantic_aggregate, replacement: get_aggregated_data_by_alias, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: semantic_distinct_values, replacement: get_distinct_values_by_alias, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_metric_definitions, replacement: list_business_metrics, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_metric_detail, replacement: get_business_metric_details, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: get_metric_data, replacement: get_business_metric_data, since: 'MCP v3.0.0 (2026-06-23)'}
+    - {name: drill_down_metric, replacement: get_business_metric_drilled_down_data, since: 'MCP v3.0.0 (2026-06-23)'}
+  removed_without_replacement:
+    - {name: profile_table_summary, note: 'Split into profile_numeric_fields + profile_categorical_fields'}
+    - {name: detect_anomalies, note: 'Removed; findings are computed client-side from profile_* plus aggregates'}
+    - {name: execute_query, note: 'Removed; use get_data_by_* advanced filters or the gated sql_query'}
+    - {name: list_metrics_by_category, note: 'Removed; filter list_business_metrics client-side'}
+    - {name: list_metrics_by_dimension, note: 'Removed; filter list_business_metrics client-side'}
+    - {name: get_metric_dimension_matrix, note: 'Removed; derive client-side'}
+
+status_page:
+  url: https://datarails.statuspage.io/
+  provider: Atlassian Statuspage
+  page_id: r4s7vxz2stlw
+  components_published: ['DataRails APIs']
+  api: https://datarails.statuspage.io/api/v2/summary.json
+  canonical_domain_declared: http://status.datarails.com
+  canonical_domain_resolves: false
+  note: >-
+    The Statuspage page declares status.datarails.com as its URL, but that
+    hostname did not resolve when probed on 2026-08-01 (connection failed).
+    The statuspage.io address is the working one. Page metadata last updated
+    2022-09-01, so the page is live but has not been curated recently.
+  x-evidence:
+    fetched: '2026-08-01'
+    url: https://datarails.statuspage.io/api/v2/summary.json
+    http_status: 200
+
+sla:
+  url: null
+  uptime_target: null
+  published: false
+  note: No public SLA or uptime commitment was found.
+
+support:
+  email: support@datarails.com
+  help_center: https://support.datarails.com/hc/en-us
+  model: Customer Success Manager plus support email; no public developer forum found.
+
+changelog:
+  mcp_plugin: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CHANGELOG.md
+  product: null
+  note: >-
+    The only dated, structured changelog Datarails publishes covers the Claude
+    Code plugin. There is no public changelog for the platform or the DGS API.
+  see: changelog/datarails-changelog.yml
+
+deprecated_operations: []

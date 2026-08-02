@@ -1,0 +1,88 @@
+generated: '2026-08-01'
+method: searched
+source: https://support.datarails.com/hc/en-us
+description: >-
+  Datarails' client-side surface is unusual: instead of embeddable web
+  components for third-party developers, it ships host-application add-ins —
+  Excel and PowerPoint — plus agent-side connectors that embed Datarails data
+  into AI clients. Both are genuine client-side components, but neither is a
+  developer-embeddable element library, and no loader script or component CDN
+  is published.
+
+families:
+  - family: Office add-ins
+    description: First-party add-ins that render live Datarails data inside Microsoft Office.
+    components:
+      - name: Datarails Flex (Excel add-in)
+        surface: Microsoft Excel
+        platforms: [Windows, macOS]
+        docs:
+          - https://support.datarails.com/hc/en-us/articles/15716070391964-Datarails-Flex-for-Windows-Installation
+          - https://support.datarails.com/hc/en-us/articles/15716095917596-Datarails-Flex-for-Mac-Installation
+        capabilities:
+          - DR.GET formulas that pull live financial data into cells
+          - Drill-down from a formula cell to underlying line items
+          - Filters and named ranges
+          - Planning mode
+        note: >-
+          DR.GET is Datarails' in-cell query language and is effectively a
+          client-side data-binding syntax. The plugin repository documents a
+          DR.GET authoring contract for agents that generate workbooks.
+      - name: PowerPoint add-in
+        surface: Microsoft PowerPoint
+        docs: https://support.datarails.com/hc/en-us/articles/4418562347793-PowerPoint-Add-in-Installation
+        capabilities:
+          - Embed Datarails-sourced charts and figures into decks
+      - name: Connect Office JS filters
+        surface: Microsoft Excel (Office.js)
+        docs: https://support.datarails.com/hc/en-us/articles/26458280440732-Connect-Office-JS-Filters
+        note: >-
+          The add-in exposes an Office.js execution path; the first-party agent
+          skills reference an execute_office_js tool for driving it.
+
+  - family: AI client connectors
+    description: >-
+      Packaged bindings that surface Datarails data inside third-party AI
+      clients. Client-side in the sense that they run in the user's assistant,
+      not in a Datarails-hosted page.
+    components:
+      - name: Datarails FinanceOS Claude Code plugin
+        client: Claude Code / Claude Desktop / Claude CoWork
+        version: 3.0.6
+        url: https://github.com/Datarails/dr-claude-code-plugins-re
+        see: skills/_index.yml
+      - name: Datarails FinanceOS ChatGPT app
+        client: ChatGPT (Plus, Team, Enterprise)
+        docs: https://support.datarails.com/hc/en-us/articles/25905041804444-Connect-Datarails-to-ChatGPT
+        note: Listed in the ChatGPT App Directory; connects over MCP with OAuth.
+      - name: Datarails FP&A Copilot Agent for Microsoft 365
+        client: Microsoft 365 Copilot
+        docs: https://support.datarails.com/hc/en-us/articles/26842914887452-Set-Up-Your-Datarails-FP-A-Copilot-Agent-in-Microsoft-365
+      - name: Datarails on Claude for Excel
+        client: Claude for Excel
+        docs: https://support.datarails.com/hc/en-us/articles/25874100800668-Getting-Started-with-Datarails-on-Claude-for-Excel
+
+  - family: In-product surfaces
+    description: >-
+      Datarails-hosted UI that customers configure rather than embed. Recorded
+      for completeness; these are not developer components.
+    components:
+      - name: Dashboards
+        docs: https://support.datarails.com/hc/en-us/articles/19714914749084-Dashboards-Overview
+      - name: Report Builder
+        docs: https://support.datarails.com/hc/en-us/articles/18981849298972-Report-Builder-Overview
+      - name: Web Editor for Collaborators
+        docs: https://support.datarails.com/hc/en-us/articles/29082848881820-Web-Editor-For-Collaborators
+
+low_code:
+  - name: Lovable
+    docs: https://support.datarails.com/hc/en-us/articles/26384776911644-Create-Datarails-Related-Apps-with-Lovable
+    note: >-
+      Datarails documents building apps against FinanceOS through Lovable, and
+      a lovable_verification TXT record exists on datarails.com. This is the
+      closest Datarails comes to a third-party app-building path.
+
+gaps:
+  - No embeddable web components, custom elements or JS element library for third-party sites.
+  - No published component CDN or loader script.
+  - No design-system package intended for external consumption (the @datarailsshared npm packages are first-party internals).

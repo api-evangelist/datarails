@@ -1,0 +1,150 @@
+generated: '2026-08-01'
+method: derived
+source: mcp/datarails-mcp.yml + openapi/datarails-financeos-mcp-openapi.json + skills/_index.yml
+description: >-
+  Crosswalk between the Datarails FinanceOS MCP tool surface and the public
+  OpenAPI at mcp.datarails.com/openapi.json. The honest finding is that they
+  barely overlap: the published OpenAPI describes only the MCP server's own
+  infrastructure and OAuth plumbing (health, readiness, discovery, callback),
+  while every data capability is exposed exclusively as an MCP tool over
+  JSON-RPC at POST /mcp. There is no public REST projection of the FinanceOS
+  data model, so nearly every tool is mcp_only by construction. That is a real
+  surface divergence, recorded rather than papered over.
+
+surfaces:
+  openapi:
+    file: openapi/datarails-financeos-mcp-openapi.json
+    source: https://mcp.datarails.com/openapi.json
+    version: OpenAPI 3.1.0
+    title: Datarails Finance OS MCP Server
+    api_version: 3.0.0
+    operations: 5
+    gated: false
+    note: >-
+      Anonymous, unauthenticated document. Describes operational and OAuth
+      endpoints only; declares no securitySchemes and no servers[].
+  mcp:
+    url: https://mcp.datarails.com/mcp
+    transport: streamable-http
+    gated: true
+    gate: OAuth 2.1 bearer; anonymous tools/list returns 401 invalid_token
+    tool_source: >-
+      Datarails' published FinanceOS MCP support article plus the allowed-tools
+      frontmatter of its 19 first-party Agent Skills. Input schemas are NOT
+      available anonymously.
+  graphql:
+    present: false
+    note: No GraphQL surface found on any Datarails host.
+  rest_data_api:
+    present: partial
+    endpoint: https://app.datarails.com/api/v1/fileboxes/upload_file
+    note: >-
+      The one documented non-MCP REST operation (Data Gateway Service file
+      upload, HTTP Basic auth, multipart form-data). It is documented in prose
+      only — Datarails publishes no OpenAPI for it — so it is captured in
+      apis.yml and conventions/ rather than as a spec operation.
+
+crosswalk:
+  - tool: (none)
+    category: operations
+    rest: [health_health_get, ready_ready_get]
+    binding: rest
+    confidence: high
+    note: >-
+      REST-only liveness/readiness probes. No MCP tool corresponds; they are
+      the server's own health surface.
+  - tool: (oauth handshake)
+    category: authentication
+    rest:
+      - protected_resource_metadata__well_known_oauth_protected_resource_get
+      - openid_configuration__well_known_openid_configuration_get
+      - oauth_callback_oauth_callback_get
+    binding: protocol
+    confidence: high
+    note: >-
+      Not tool-backed. These operations implement the OAuth 2.1 / RFC 9728
+      handshake every MCP client performs before any tool call, so they back
+      the whole tool surface indirectly rather than any single tool.
+
+mcp_only:
+  - tool: list_data_models
+    reason: No public REST operation. Data-model discovery exists only over JSON-RPC.
+  - tool: list_aliased_fields
+    reason: No public REST operation; aliased-field layer is MCP-exclusive.
+  - tool: get_fields_by_id
+    reason: No public REST operation for schema retrieval.
+  - tool: list_business_metrics
+    reason: No public REST operation for the KPI/business-metric catalog.
+  - tool: profile_numeric_fields
+    reason: No public REST operation; profiling is MCP-exclusive.
+  - tool: profile_categorical_fields
+    reason: No public REST operation; profiling is MCP-exclusive.
+  - tool: get_data_by_alias
+    reason: Row retrieval has no public REST projection.
+  - tool: get_data_by_id
+    reason: Row retrieval has no public REST projection.
+  - tool: start_aggregation_by_alias
+    reason: Async aggregation start has no public REST projection.
+  - tool: get_aggregation_result_by_alias
+    reason: Async aggregation poll has no public REST projection.
+  - tool: start_aggregation_by_id
+    reason: Async aggregation start has no public REST projection.
+  - tool: get_aggregation_result_by_id
+    reason: Async aggregation poll has no public REST projection.
+  - tool: get_aggregated_data_by_alias
+    reason: Deprecated blocking aggregation; no public REST projection.
+  - tool: get_aggregated_data_by_id
+    reason: Deprecated blocking aggregation; no public REST projection.
+  - tool: start_distinct_values_by_alias
+    reason: No public REST projection.
+  - tool: get_distinct_values_result_by_alias
+    reason: No public REST projection.
+  - tool: start_distinct_values_by_id
+    reason: No public REST projection.
+  - tool: get_distinct_values_result_by_id
+    reason: No public REST projection.
+  - tool: get_distinct_values_by_alias
+    reason: Deprecated blocking variant; no public REST projection.
+  - tool: get_distinct_values_by_id
+    reason: Deprecated blocking variant; no public REST projection.
+  - tool: get_business_metric_details
+    reason: No public REST projection; additionally feature-flag gated (use_semantic_layer_v2).
+  - tool: get_business_metric_data
+    reason: No public REST projection; additionally feature-flag gated.
+  - tool: get_business_metric_drilled_down_data
+    reason: No public REST projection; additionally feature-flag gated.
+  - tool: get_business_metric_table_rows
+    reason: No public REST projection; additionally feature-flag gated.
+  - tool: sql_query
+    reason: No public REST projection; gated behind the mcp_use_llm_sql_tool flag.
+
+rest_only:
+  - capability: liveness and readiness
+    operations: [health_health_get, ready_ready_get]
+    note: Operational probes with no agent-facing tool.
+  - capability: OAuth 2.1 / OIDC discovery and callback
+    operations:
+      - protected_resource_metadata__well_known_oauth_protected_resource_get
+      - openid_configuration__well_known_openid_configuration_get
+      - oauth_callback_oauth_callback_get
+    note: Protocol plumbing, exercised by clients rather than by agents.
+  - capability: Data Gateway Service file upload
+    operations: []
+    endpoint: POST https://app.datarails.com/api/v1/fileboxes/upload_file
+    note: >-
+      Documented in prose only, on a different host, with a different auth
+      model (HTTP Basic). The only write path Datarails documents publicly —
+      and it has no MCP tool, consistent with the MCP surface being read-only.
+
+coverage:
+  tools_named: 25
+  tools_bound_to_rest: 0
+  mcp_only: 25
+  rest_operations_total: 5
+  rest_operations_with_a_tool: 0
+  graphql_fields: 0
+  note: >-
+    Zero binding is the correct, honest result here — not a mapping failure.
+    The OpenAPI and the tool surface describe disjoint concerns on the same
+    host. If Datarails ever publishes a REST projection of the data layer, this
+    file is where those bindings belong.

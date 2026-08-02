@@ -1,0 +1,20 @@
+{
+  "name": "datarails-marketplace",
+  "metadata": {
+    "description": "Datarails Finance OS plugin marketplace"
+  },
+  "owner": {
+    "name": "Datarails",
+    "email": "support@datarails.com"
+  },
+  "plugins": [
+    {
+      "name": "datarails-financeos",
+      "source": "./",
+      "description": "Financial analysis, reporting, and DR.GET formula generation for Datarails Finance OS",
+      "author": {
+        "name": "Datarails"
+      }
+    }
+  ]
+}

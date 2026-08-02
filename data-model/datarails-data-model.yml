@@ -1,0 +1,135 @@
+generated: '2026-08-01'
+method: derived
+source: mcp/datarails-mcp.yml + https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/CLAUDE.md
+description: >-
+  Entity graph of the Datarails FinanceOS data layer, derived from the tool
+  surface and from the operating contract Datarails publishes for its own
+  agents. It could NOT be derived from OpenAPI — the public spec covers only
+  the MCP server's health and OAuth endpoints and declares no domain schemas.
+  Datarails' model is meta-relational: it does not expose fixed business
+  objects like Invoice or Customer, it exposes customer-defined data models
+  whose fields and dimension values are discovered at runtime. That is the
+  single most important structural fact about integrating with it.
+
+shape: meta-relational (runtime-discovered schema, not a fixed object model)
+
+entities:
+  - name: DataModel
+    aka: [finance table, data model]
+    discovered_by: list_data_models
+    description: >-
+      A customer-defined finance table. The entry point for both raw data
+      layers. Every entry carries a numeric id and an alias (empty when the
+      table has no alias).
+    identifiers:
+      - {field: id, type: integer, used_by: the *_by_id tool family}
+      - {field: alias, type: string, nullable: true, used_by: the *_by_alias tool family}
+    relationships:
+      - {type: has_many, target: Field, via: get_fields_by_id}
+      - {type: has_many, target: AliasedField, via: list_aliased_fields}
+      - {type: has_many, target: Record, via: get_data_by_id / get_data_by_alias}
+
+  - name: Field
+    discovered_by: get_fields_by_id
+    description: A column on a DataModel, addressed by numeric field_id. Always resolvable.
+    identifiers:
+      - {field: field_id, type: integer}
+    attributes: [name, type, relationships]
+    relationships:
+      - {type: belongs_to, target: DataModel, via: table id}
+      - {type: has_many, target: DistinctValue, via: start_distinct_values_by_id}
+
+  - name: AliasedField
+    discovered_by: list_aliased_fields
+    description: >-
+      A friendly-named projection of a Field. Preferred where present (roughly
+      95% fewer tokens), but coverage is sparse and per field — Datarails'
+      own testing found a mapped table exposing about 5 aliased fields out of
+      about 185, none of them load-bearing.
+    identifiers:
+      - {field: name, type: string}
+    relationships:
+      - {type: belongs_to, target: Field, via: alias mapping}
+    caveat: A table alias does NOT imply its fields are aliased.
+
+  - name: Record
+    discovered_by: get_data_by_alias / get_data_by_id
+    description: A row of a DataModel. Retrieved in pages of at most 500 rows.
+    relationships:
+      - {type: belongs_to, target: DataModel}
+
+  - name: DistinctValue
+    discovered_by: start_distinct_values_by_* -> get_distinct_values_result_by_*
+    description: >-
+      A member of a dimension's value domain. The mechanism by which scenario
+      domains, account levels and department lists are discovered at runtime
+      rather than hardcoded.
+    relationships:
+      - {type: belongs_to, target: Field}
+
+  - name: Aggregation
+    discovered_by: start_aggregation_by_* -> get_aggregation_result_by_*
+    description: >-
+      A grouped rollup over a DataModel. Not a stored entity — a job with a
+      handle and a lifecycle (pending, running, complete, expired).
+    lifecycle: [pending, running, complete, expired]
+    response_quirks:
+      - Every GROUP BY response appends a keyless grand-total row that must be excluded from sums.
+      - Nulls arrive as an explicit [null] bucket.
+      - Results over about 100 KB return a truncation envelope with an incomplete data prefix.
+
+  - name: BusinessMetric
+    aka: KPI
+    discovered_by: list_business_metrics
+    description: >-
+      A named, org-defined KPI in the semantic layer. Discovery is ungated;
+      the value-returning tools are feature-flag gated behind
+      use_semantic_layer_v2 (default deny).
+    relationships:
+      - {type: has_one, target: BusinessMetricDetail, via: get_business_metric_details}
+      - {type: has_many, target: Record, via: get_business_metric_table_rows}
+    gated: partially
+
+  - name: Filebox
+    discovered_by: Datarails application UI
+    description: >-
+      The inbound file-drop entity for the Data Gateway Service. Identified by
+      a UUID copied from the Filebox settings tab, and it must have "Upload via
+      API" explicitly enabled before the API will accept a file for it.
+    identifiers:
+      - {field: UUID, type: uuid, obtained_from: Filebox settings tab in the application}
+    relationships:
+      - {type: has_many, target: FileVersion, via: 'POST /api/v1/fileboxes/upload_file'}
+    docs: https://support.datarails.com/hc/en-us/articles/13813197730332-Filebox-Overview
+
+  - name: FileVersion
+    description: >-
+      A CSV or Excel file uploaded into a Filebox, tagged into a period. The
+      version_name must end in .csv or .xlsx and version_tags is a JSON object
+      naming the date the file is tagged into.
+    attributes: [version_name, version_tags, skip_first_row, include_in_dashboard]
+    relationships:
+      - {type: belongs_to, target: Filebox, via: filebox_id}
+
+conceptual_dimensions:
+  note: >-
+    Not entities, but the dimensions Datarails' own agent contract insists must
+    be DISCOVERED per tenant rather than assumed. Recorded because assuming
+    them is the documented cause of wrong financial output.
+  dimensions:
+    - name: scenario domain
+      guidance: Never assume a "Budget" scenario exists; route budget/plan questions to a discovered planning-version-like field.
+    - name: account grain
+      guidance: >-
+        Pick the hierarchy level whose values partition P&L flows. The top
+        level is often the balance-sheet equation, so binding P&L categories
+        there misclassifies ASSET/LIABILITY/EQUITY as expenses.
+    - name: period
+      guidance: Default P&L questions to the latest complete fiscal year or trailing 12 closed months, and label every output with period and scenario.
+    - name: entity and currency
+      guidance: Multi-entity and multi-currency orgs return all of them unless explicitly filtered.
+
+not_derivable:
+  - Datarails exposes no fixed business object model, so there are no stable id prefixes or global object types to catalogue.
+  - No public REST projection of any of these entities exists; every relationship above is traversed through MCP tools.
+  - MCP tool inputSchemas are OAuth-gated, so exact field names and types per tool argument are not recorded here.

@@ -1,0 +1,20 @@
+{
+  "name": "datarails-financeos",
+  "version": "3.0.6",
+  "description": "Datarails Finance OS integration - analyze financial data, detect anomalies, and generate insights.",
+  "author": {
+    "name": "Datarails",
+    "email": "support@datarails.com"
+  },
+  "homepage": "https://www.datarails.com",
+  "privacy": "https://www.datarails.com/privacy-policy/",
+  "repository": "https://github.com/Datarails/dr-claude-code-plugins-re",
+  "license": "MIT",
+  "keywords": ["finance", "fpna", "datarails", "financial-analysis", "reporting", "budgeting"],
+  "mcpServers": {
+    "datarails-finance-os": {
+      "type": "http",
+      "url": "https://mcp.datarails.com/mcp"
+    }
+  }
+}

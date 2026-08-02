@@ -1,0 +1,90 @@
+generated: '2026-08-01'
+method: searched
+probe: true
+url: https://trust.datarails.com/
+canonical_entry: https://www.datarails.com/compliance-and-legal-documents/
+platform: Vendict
+description: >-
+  Datarails operates a hosted trust center at trust.datarails.com, reached from
+  the marketing site via /compliance-and-legal-documents/ (HTTP 301). The trust
+  center itself is a Nuxt single-page application whose certification list is
+  loaded client-side from the Vendict API, so the certifications below are NOT
+  scraped from it — they are taken verbatim from Datarails' own support
+  documentation, which is a first-party published claim with a citable URL.
+
+certifications:
+  - name: SOC 2 Type II
+    source: https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
+    claim: 'Datarails is SOC 2 Type II, GDPR, and ISO 27001 certified.'
+    evidence_type: provider documentation
+  - name: ISO 27001
+    source: https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
+    claim: 'Datarails is SOC 2 Type II, GDPR, and ISO 27001 certified.'
+    evidence_type: provider documentation
+  - name: GDPR
+    source: https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
+    claim: 'Datarails is SOC 2 Type II, GDPR, and ISO 27001 certified.'
+    evidence_type: provider documentation
+    note: A regulation, not a certification; recorded as Datarails states it.
+
+documents:
+  - name: Security and compliance documentation
+    url: https://www.datarails.com/datarails-security-and-compliance-documents/
+    redirects_to: https://trust.datarails.com/overview/
+    note: >-
+      The support article "Datarails Security and Compliance" points here; the
+      page 301-redirects into the trust center, where document access is gated.
+  - name: Privacy Policy
+    url: https://www.datarails.com/privacy-policy/
+    last_updated: '2026-03-23'
+    contact: compliance@datarails.com
+  - name: Terms of Service
+    url: https://www.datarails.com/terms-of-service/
+    last_updated: '2026-03-15'
+  - name: AI Terms
+    url: https://www.datarails.com/datarails-ai-terms/
+    last_updated: '2026-03-15'
+    note: Separate published terms governing Datarails' use of AI.
+
+gated_document_set:
+  note: >-
+    The retired /datarails-security-and-compliance-documents/ page rendered one
+    tile per downloadable document, and the tile image slugs survive in the
+    WordPress page sitemap. They enumerate the document set Datarails makes
+    available behind the trust center. The DOCUMENTS THEMSELVES ARE GATED and
+    were not retrieved; only their names are recorded.
+  source: https://www.datarails.com/page-sitemap.xml
+  documents:
+    - SOC 1 Type II
+    - Security white paper
+    - Technical and architecture overview
+    - Penetration test statement
+    - Incident response plan
+    - HIPAA compliance
+    - GDPR terms
+    - Terms and conditions
+  caveat: >-
+    A tile named "soc-1-type-ii" is evidence of a SOC 1 Type II report, which is
+    a different attestation from the SOC 2 Type II Datarails claims in its
+    support documentation. Both are recorded; neither report was seen.
+
+related_pages:
+  - https://support.datarails.com/hc/en-us/articles/6160603869073-Datarails-Security-and-Compliance
+  - https://support.datarails.com/hc/en-us/articles/5568068213265-Data-Privacy
+
+ai_data_handling:
+  source: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+  hosting_region: United States
+  transport_encryption: HTTPS in transit
+  minimisation: Only the data required to fulfil a specific request is transmitted.
+  replication: No full dataset replication occurs as part of the MCP integration.
+  access_boundary: Access remains limited to the caller's existing Datarails user permissions.
+  read_only: The MCP connection cannot create, update or delete records.
+
+x-evidence:
+  fetched: '2026-08-01'
+  probes:
+    - {url: 'https://trust.datarails.com/', http_status: 200, note: 'Nuxt SPA shell; certification list not present in the served HTML'}
+    - {url: 'https://www.datarails.com/datarails-security-and-compliance-documents/', http_status: 301, location: 'https://trust.datarails.com/overview/'}
+    - {url: 'https://trust.datarails.com/overview/', http_status: 404, note: 'Direct fetch of the deep link 404s; the SPA routes it client-side'}
+  keywords_confirmed: [trust center, compliance, security]

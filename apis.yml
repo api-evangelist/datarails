@@ -103,6 +103,13 @@ maintainers:
   email: info@apis.io
 
 common:
+- type: IssueTracker
+  url: https://github.com/Datarails/dr-claude-code-plugins-re/issues
+- type: Releases
+  url: https://github.com/Datarails/dr-claude-code-plugins-re/releases
+- type: License
+  name: MIT
+  url: https://github.com/Datarails/dr-claude-code-plugins-re/blob/main/LICENSE
 - type: Website
   url: https://www.datarails.com/
 - type: Integrations

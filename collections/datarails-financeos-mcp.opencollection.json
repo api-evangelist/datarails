@@ -1,0 +1,87 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Datarails Finance OS MCP Server",
+    "version": "3.0.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Health",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{baseUrl}}/health"
+      },
+      "docs": "Health"
+    },
+    {
+      "info": {
+        "name": "Protected Resource Metadata",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{baseUrl}}/.well-known/oauth-protected-resource"
+      },
+      "docs": "Protected Resource Metadata"
+    },
+    {
+      "info": {
+        "name": "Openid Configuration",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{baseUrl}}/.well-known/openid-configuration"
+      },
+      "docs": "Openid Configuration"
+    },
+    {
+      "info": {
+        "name": "Oauth Callback",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{baseUrl}}/oauth/callback",
+        "params": [
+          {
+            "name": "session_token",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "env_url",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "state",
+            "value": "",
+            "type": "query"
+          },
+          {
+            "name": "error",
+            "value": "",
+            "type": "query"
+          }
+        ]
+      },
+      "docs": "Handle Descope callback — exchange session token for JWT via POST."
+    },
+    {
+      "info": {
+        "name": "Ready",
+        "type": "http"
+      },
+      "http": {
+        "method": "GET",
+        "url": "{{baseUrl}}/ready"
+      },
+      "docs": "Ready"
+    }
+  ],
+  "bundled": true
+}

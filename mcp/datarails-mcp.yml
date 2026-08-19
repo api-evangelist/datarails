@@ -3,44 +3,40 @@ method: searched
 status: published
 source: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
 docs:
-  - https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
-  - https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
-  - https://support.datarails.com/hc/en-us/articles/25874100800668-Getting-Started-with-Datarails-on-Claude-for-Excel
-  - https://support.datarails.com/hc/en-us/articles/25905041804444-Connect-Datarails-to-ChatGPT
-  - https://support.datarails.com/hc/en-us/articles/26842914887452-Set-Up-Your-Datarails-FP-A-Copilot-Agent-in-Microsoft-365
-
+- https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
+- https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop
+- https://support.datarails.com/hc/en-us/articles/25874100800668-Getting-Started-with-Datarails-on-Claude-for-Excel
+- https://support.datarails.com/hc/en-us/articles/25905041804444-Connect-Datarails-to-ChatGPT
+- https://support.datarails.com/hc/en-us/articles/26842914887452-Set-Up-Your-Datarails-FP-A-Copilot-Agent-in-Microsoft-365
 server:
   name: datarails-finance-os
   product: Datarails FinanceOS
   transport: http
   subtype: streamable-http
   url: https://mcp.datarails.com/mcp
-  version: '3.0.0'
+  version: 3.0.0
   version_source: openapi/datarails-financeos-mcp-openapi.json (info.version)
   hosting_region: United States
   paid_feature: true
-  access_note: >-
-    Enabling the FinanceOS AI connector is a paid, per-tenant entitlement.
-    Denied users receive "Authentication Denied: It seems like you are not
-    permitted to use this tool. Please reach out to your CSM for more details."
-
+  access_note: 'Enabling the FinanceOS AI connector is a paid, per-tenant entitlement. Denied users receive
+    "Authentication Denied: It seems like you are not permitted to use this tool. Please reach out to
+    your CSM for more details."'
 install:
   claude_code: claude mcp add datarails-finance-os --transport http https://mcp.datarails.com/mcp
-  claude_desktop_config: |
-    {
-      "mcpServers": {
-        "datarails-finance-os": {
-          "type": "streamable-http",
-          "url": "https://mcp.datarails.com/mcp"
-        }
-      }
-    }
+  claude_desktop_config: "{\n  \"mcpServers\": {\n    \"datarails-finance-os\": {\n      \"type\": \"\
+    streamable-http\",\n      \"url\": \"https://mcp.datarails.com/mcp\"\n    }\n  }\n}\n"
   plugin_marketplace: https://github.com/Datarails/dr-claude-code-plugins-re
   plugin_name: datarails-financeos
   plugin_version: 3.0.6
-  clients_supported: [Claude Code, Claude CoWork, Claude Desktop, Claude.ai, ChatGPT, Lovable]
-  clients_announced: [Microsoft 365 Copilot]
-
+  clients_supported:
+  - Claude Code
+  - Claude CoWork
+  - Claude Desktop
+  - Claude.ai
+  - ChatGPT
+  - Lovable
+  clients_announced:
+  - Microsoft 365 Copilot
 authentication:
   type: oauth2
   profile: OAuth 2.1 with PKCE (S256)
@@ -49,232 +45,233 @@ authentication:
   authorization_endpoint: https://mcp.datarails.com/authorize
   token_endpoint: https://mcp.datarails.com/token
   revocation_endpoint: https://mcp.datarails.com/revoke
-  scopes: [datarails]
-  bearer_methods_supported: [header]
+  scopes:
+  - datarails
+  bearer_methods_supported:
+  - header
   protected_resource_metadata: https://mcp.datarails.com/.well-known/oauth-protected-resource/mcp
   see: authentication/datarails-authentication.yml
-
 x-probe:
   fetched: '2026-08-01'
   endpoint: https://mcp.datarails.com/mcp
-  method: 'POST {"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  method: POST {"jsonrpc":"2.0","id":1,"method":"tools/list"}
   http_status: 401
   body: '{"error": "invalid_token", "error_description": "Authentication required"}'
-  www_authenticate: >-
-    Bearer error="invalid_token", error_description="Authentication required",
-    resource_metadata="https://mcp.datarails.com/.well-known/oauth-protected-resource/mcp"
+  www_authenticate: Bearer error="invalid_token", error_description="Authentication required", resource_metadata="https://mcp.datarails.com/.well-known/oauth-protected-resource/mcp"
   observed_headers:
     x-ratelimit-limit: '120'
     x-ratelimit-remaining: '119'
     strict-transport-security: max-age=15552000
-  conclusion: >-
-    Live tools/list introspection is OAuth-gated, so no inputSchema could be
-    captured anonymously. The tool names and semantics below are transcribed
-    from Datarails' own published documentation (the FinanceOS MCP support
-    article) and from the allowed-tools frontmatter of the 19 first-party
-    Agent Skills Datarails ships in its public Claude Code plugin repository
-    (github.com/Datarails/dr-claude-code-plugins-re). Input schemas require an
-    authenticated tools/list call and are NOT recorded here.
-
-tool_surface_note: >-
-  Two published tool surfaces exist and they disagree. The support article
-  (updated 2026-05-04) documents the pre-3.0 tool names; the plugin repository
-  CHANGELOG records that the MCP server consolidated its tool surface in v3.0.0
-  (2026-06-23) and again in v3.0.5 (2026-07-12, async start-poll migration).
-  The current names below are taken from the plugin, which is the newer of the
-  two; the retired names are preserved as aliases because Datarails documents
-  that the server still maps them.
-
+  conclusion: Live tools/list introspection is OAuth-gated, so no inputSchema could be captured anonymously.
+    The tool names and semantics below are transcribed from Datarails' own published documentation (the
+    FinanceOS MCP support article) and from the allowed-tools frontmatter of the 19 first-party Agent
+    Skills Datarails ships in its public Claude Code plugin repository (github.com/Datarails/dr-claude-code-plugins-re).
+    Input schemas require an authenticated tools/list call and are NOT recorded here.
+tool_surface_note: Two published tool surfaces exist and they disagree. The support article (updated 2026-05-04)
+  documents the pre-3.0 tool names; the plugin repository CHANGELOG records that the MCP server consolidated
+  its tool surface in v3.0.0 (2026-06-23) and again in v3.0.5 (2026-07-12, async start-poll migration).
+  The current names below are taken from the plugin, which is the newer of the two; the retired names
+  are preserved as aliases because Datarails documents that the server still maps them.
 tools:
-  # --- Discovery ---
-  - name: list_data_models
-    category: discovery
-    description: >-
-      Entry point for both raw data layers. Lists available finance tables /
-      data models; each entry carries the numeric id (for the by-id tools) and
-      the alias (for the by-alias tools; empty when a table has no alias).
-    gated: false
-    aliases_retired: [list_finance_tables]
-  - name: list_aliased_fields
-    category: discovery
-    description: >-
-      Lists the aliased (friendly-named) fields of a table. Preferred raw-data
-      entry point — roughly 95% fewer tokens than the by-id layer. A table
-      alias does not imply its fields are aliased.
-    gated: false
-    aliases_retired: [list_semantic_tables, get_semantic_table_schema]
-  - name: get_fields_by_id
-    category: discovery
-    description: Returns column names, types and relationships for a table by numeric id.
-    gated: false
-    aliases_retired: [get_table_schema]
-  - name: list_business_metrics
-    category: discovery
-    description: >-
-      Lists the org's named business metrics (KPI catalog). Ungated, so it is
-      the discovery entry point for the business-metrics layer even where the
-      metric-data tools are feature-flag denied.
-    gated: false
-    aliases_retired: [get_metric_definitions]
-
-  # --- Profiling ---
-  - name: profile_numeric_fields
-    category: profiling
-    description: >-
-      Baseline numeric statistics (SUM/AVG/MIN/MAX/COUNT) per field, relayed in
-      the backend-native DR_Values / col_keys / row_keys layout.
-    gated: false
-  - name: profile_categorical_fields
-    category: profiling
-    description: >-
-      Category frequencies and cardinality. Must be given an explicit
-      business-dimension field list, or it profiles upload/mapping metadata
-      columns rather than business data.
-    gated: false
-
-  # --- Raw row access ---
-  - name: get_data_by_alias
-    category: query
-    description: Retrieve filtered rows from an aliased table (max 500 rows per page).
-    gated: false
-    aliases_retired: [get_records_by_filter, get_sample_records, semantic_query]
-  - name: get_data_by_id
-    category: query
-    description: Retrieve filtered rows from a table by numeric field ids (max 500 rows per page).
-    gated: false
-    aliases_retired: [get_records_by_filter, get_sample_records]
-
-  # --- Aggregation (async start -> poll, v3.1) ---
-  - name: start_aggregation_by_alias
-    category: aggregation
-    description: >-
-      Start a grouped aggregation over an aliased table. Non-blocking; returns
-      {status: pending, handle}. No row limit on the result.
-    gated: false
-  - name: get_aggregation_result_by_alias
-    category: aggregation
-    description: >-
-      Poll for the result of start_aggregation_by_alias. status "running" plus
-      retry_after_seconds means poll again; it is not an error.
-    gated: false
-  - name: start_aggregation_by_id
-    category: aggregation
-    description: Start a grouped aggregation over a table addressed by numeric field ids.
-    gated: false
-  - name: get_aggregation_result_by_id
-    category: aggregation
-    description: Poll for the result of start_aggregation_by_id.
-    gated: false
-  - name: get_aggregated_data_by_alias
-    category: aggregation
-    description: Blocking aggregation over an aliased table.
-    gated: false
-    deprecated: true
-    superseded_by: [start_aggregation_by_alias, get_aggregation_result_by_alias]
-    note: Hidden from the tool list since v3.1 but still callable.
-    aliases_retired: [aggregate_table_data, semantic_aggregate]
-  - name: get_aggregated_data_by_id
-    category: aggregation
-    description: Blocking aggregation over a table by numeric field ids.
-    gated: false
-    deprecated: true
-    superseded_by: [start_aggregation_by_id, get_aggregation_result_by_id]
-    aliases_retired: [aggregate_table_data]
-
-  # --- Distinct values (async start -> poll, v3.1) ---
-  - name: start_distinct_values_by_alias
-    category: discovery
-    description: Start a distinct-values fetch for an aliased field. Non-blocking.
-    gated: false
-  - name: get_distinct_values_result_by_alias
-    category: discovery
-    description: Poll for distinct values started by start_distinct_values_by_alias; takes the limit argument.
-    gated: false
-  - name: start_distinct_values_by_id
-    category: discovery
-    description: Start a distinct-values fetch for a field addressed by numeric id.
-    gated: false
-  - name: get_distinct_values_result_by_id
-    category: discovery
-    description: Poll for distinct values started by start_distinct_values_by_id.
-    gated: false
-  - name: get_distinct_values_by_alias
-    category: discovery
-    description: Blocking distinct-values fetch for an aliased field.
-    gated: false
-    deprecated: true
-    superseded_by: [start_distinct_values_by_alias, get_distinct_values_result_by_alias]
-    aliases_retired: [get_field_distinct_values, semantic_distinct_values]
-  - name: get_distinct_values_by_id
-    category: discovery
-    description: Blocking distinct-values fetch for a field by numeric id.
-    gated: false
-    deprecated: true
-    superseded_by: [start_distinct_values_by_id, get_distinct_values_result_by_id]
-    aliases_retired: [get_field_distinct_values]
-
-  # --- Business metrics (feature-flag gated) ---
-  - name: get_business_metric_details
-    category: business-metrics
-    description: Definition and metadata for one named business metric.
-    gated: true
-    feature_flag: use_semantic_layer_v2
-    aliases_retired: [get_metric_detail]
-  - name: get_business_metric_data
-    category: business-metrics
-    description: Values for one named business metric.
-    gated: true
-    feature_flag: use_semantic_layer_v2
-    aliases_retired: [get_metric_data]
-  - name: get_business_metric_drilled_down_data
-    category: business-metrics
-    description: Drill a business metric down by a dimension.
-    gated: true
-    feature_flag: use_semantic_layer_v2
-    aliases_retired: [drill_down_metric]
-  - name: get_business_metric_table_rows
-    category: business-metrics
-    description: Underlying rows behind a business metric.
-    gated: true
-    feature_flag: use_semantic_layer_v2
-  - name: sql_query
-    category: query
-    description: Free-form SQL over the org's finance tables.
-    gated: true
-    feature_flag: mcp_use_llm_sql_tool
-    aliases_retired: [execute_query]
-
+- name: list_data_models
+  category: discovery
+  description: Entry point for both raw data layers. Lists available finance tables / data models; each
+    entry carries the numeric id (for the by-id tools) and the alias (for the by-alias tools; empty when
+    a table has no alias).
+  gated: false
+  aliases_retired:
+  - list_finance_tables
+- name: list_aliased_fields
+  category: discovery
+  description: Lists the aliased (friendly-named) fields of a table. Preferred raw-data entry point —
+    roughly 95% fewer tokens than the by-id layer. A table alias does not imply its fields are aliased.
+  gated: false
+  aliases_retired:
+  - list_semantic_tables
+  - get_semantic_table_schema
+- name: get_fields_by_id
+  category: discovery
+  description: Returns column names, types and relationships for a table by numeric id.
+  gated: false
+  aliases_retired:
+  - get_table_schema
+- name: list_business_metrics
+  category: discovery
+  description: Lists the org's named business metrics (KPI catalog). Ungated, so it is the discovery entry
+    point for the business-metrics layer even where the metric-data tools are feature-flag denied.
+  gated: false
+  aliases_retired:
+  - get_metric_definitions
+- name: profile_numeric_fields
+  category: profiling
+  description: Baseline numeric statistics (SUM/AVG/MIN/MAX/COUNT) per field, relayed in the backend-native
+    DR_Values / col_keys / row_keys layout.
+  gated: false
+- name: profile_categorical_fields
+  category: profiling
+  description: Category frequencies and cardinality. Must be given an explicit business-dimension field
+    list, or it profiles upload/mapping metadata columns rather than business data.
+  gated: false
+- name: get_data_by_alias
+  category: query
+  description: Retrieve filtered rows from an aliased table (max 500 rows per page).
+  gated: false
+  aliases_retired:
+  - get_records_by_filter
+  - get_sample_records
+  - semantic_query
+- name: get_data_by_id
+  category: query
+  description: Retrieve filtered rows from a table by numeric field ids (max 500 rows per page).
+  gated: false
+  aliases_retired:
+  - get_records_by_filter
+  - get_sample_records
+- name: start_aggregation_by_alias
+  category: aggregation
+  description: 'Start a grouped aggregation over an aliased table. Non-blocking; returns {status: pending,
+    handle}. No row limit on the result.'
+  gated: false
+- name: get_aggregation_result_by_alias
+  category: aggregation
+  description: Poll for the result of start_aggregation_by_alias. status "running" plus retry_after_seconds
+    means poll again; it is not an error.
+  gated: false
+- name: start_aggregation_by_id
+  category: aggregation
+  description: Start a grouped aggregation over a table addressed by numeric field ids.
+  gated: false
+- name: get_aggregation_result_by_id
+  category: aggregation
+  description: Poll for the result of start_aggregation_by_id.
+  gated: false
+- name: get_aggregated_data_by_alias
+  category: aggregation
+  description: Blocking aggregation over an aliased table.
+  gated: false
+  deprecated: true
+  superseded_by:
+  - start_aggregation_by_alias
+  - get_aggregation_result_by_alias
+  note: Hidden from the tool list since v3.1 but still callable.
+  aliases_retired:
+  - aggregate_table_data
+  - semantic_aggregate
+- name: get_aggregated_data_by_id
+  category: aggregation
+  description: Blocking aggregation over a table by numeric field ids.
+  gated: false
+  deprecated: true
+  superseded_by:
+  - start_aggregation_by_id
+  - get_aggregation_result_by_id
+  aliases_retired:
+  - aggregate_table_data
+- name: start_distinct_values_by_alias
+  category: discovery
+  description: Start a distinct-values fetch for an aliased field. Non-blocking.
+  gated: false
+- name: get_distinct_values_result_by_alias
+  category: discovery
+  description: Poll for distinct values started by start_distinct_values_by_alias; takes the limit argument.
+  gated: false
+- name: start_distinct_values_by_id
+  category: discovery
+  description: Start a distinct-values fetch for a field addressed by numeric id.
+  gated: false
+- name: get_distinct_values_result_by_id
+  category: discovery
+  description: Poll for distinct values started by start_distinct_values_by_id.
+  gated: false
+- name: get_distinct_values_by_alias
+  category: discovery
+  description: Blocking distinct-values fetch for an aliased field.
+  gated: false
+  deprecated: true
+  superseded_by:
+  - start_distinct_values_by_alias
+  - get_distinct_values_result_by_alias
+  aliases_retired:
+  - get_field_distinct_values
+  - semantic_distinct_values
+- name: get_distinct_values_by_id
+  category: discovery
+  description: Blocking distinct-values fetch for a field by numeric id.
+  gated: false
+  deprecated: true
+  superseded_by:
+  - start_distinct_values_by_id
+  - get_distinct_values_result_by_id
+  aliases_retired:
+  - get_field_distinct_values
+- name: get_business_metric_details
+  category: business-metrics
+  description: Definition and metadata for one named business metric.
+  gated: true
+  feature_flag: use_semantic_layer_v2
+  aliases_retired:
+  - get_metric_detail
+- name: get_business_metric_data
+  category: business-metrics
+  description: Values for one named business metric.
+  gated: true
+  feature_flag: use_semantic_layer_v2
+  aliases_retired:
+  - get_metric_data
+- name: get_business_metric_drilled_down_data
+  category: business-metrics
+  description: Drill a business metric down by a dimension.
+  gated: true
+  feature_flag: use_semantic_layer_v2
+  aliases_retired:
+  - drill_down_metric
+- name: get_business_metric_table_rows
+  category: business-metrics
+  description: Underlying rows behind a business metric.
+  gated: true
+  feature_flag: use_semantic_layer_v2
+- name: sql_query
+  category: query
+  description: Free-form SQL over the org's finance tables.
+  gated: true
+  feature_flag: mcp_use_llm_sql_tool
+  aliases_retired:
+  - execute_query
 removed_tools:
-  - name: profile_table_summary
-    reason: Removed in v3.0.0; replaced by profile_numeric_fields + profile_categorical_fields.
-  - name: detect_anomalies
-    reason: Removed in v3.0.0; anomaly findings are computed client-side from profile_* plus aggregates.
-  - name: execute_query
-    reason: Removed in v3.0.0; superseded by get_data_by_* advanced filters (or gated sql_query).
-  - name: list_metrics_by_category
-    reason: Removed; filter the list_business_metrics result client-side.
-  - name: list_metrics_by_dimension
-    reason: Removed; filter the list_business_metrics result client-side.
-  - name: get_metric_dimension_matrix
-    reason: Removed; derive client-side from list_business_metrics.
-
+- name: profile_table_summary
+  reason: Removed in v3.0.0; replaced by profile_numeric_fields + profile_categorical_fields.
+- name: detect_anomalies
+  reason: Removed in v3.0.0; anomaly findings are computed client-side from profile_* plus aggregates.
+- name: execute_query
+  reason: Removed in v3.0.0; superseded by get_data_by_* advanced filters (or gated sql_query).
+- name: list_metrics_by_category
+  reason: Removed; filter the list_business_metrics result client-side.
+- name: list_metrics_by_dimension
+  reason: Removed; filter the list_business_metrics result client-side.
+- name: get_metric_dimension_matrix
+  reason: Removed; derive client-side from list_business_metrics.
 capabilities:
   read_only: true
-  read_only_evidence: >-
-    "Can ChatGPT modify my data in Datarails? No. The MCP connection is
-    read-only. ChatGPT can query and analyze your data but cannot create,
-    update, or delete any records in Datarails." —
-    support.datarails.com/hc/en-us/articles/25905041804444
-  permission_model: >-
-    Server-side enforcement of the caller's existing Datarails permissions; a
-    user sees only data they are authorised to access in the tenant.
+  read_only_evidence: '"Can ChatGPT modify my data in Datarails? No. The MCP connection is read-only.
+    ChatGPT can query and analyze your data but cannot create, update, or delete any records in Datarails."
+    — support.datarails.com/hc/en-us/articles/25905041804444'
+  permission_model: Server-side enforcement of the caller's existing Datarails permissions; a user sees
+    only data they are authorised to access in the tenant.
   data_replication: none (only data required for a specific request is transmitted)
-
 limits:
   filtered_row_fetch: 500 rows per page (get_data_by_*)
   custom_query_rows: 1000
   aggregation_rows: unlimited
-  serialized_result_cap: ~100 KB, after which the response carries a truncation envelope {data, truncated, total_rows, returned_rows, guidance}
-  token_expiry: JWT expires in 5 minutes; auto-refreshed for aggregation, manual refresh every 20K rows for pagination
+  serialized_result_cap: ~100 KB, after which the response carries a truncation envelope {data, truncated,
+    total_rows, returned_rows, guidance}
+  token_expiry: JWT expires in 5 minutes; auto-refreshed for aggregation, manual refresh every 20K rows
+    for pagination
   observed_rate_limit_header: 'x-ratelimit-limit: 120'
   see: rate-limits/datarails-rate-limits.yml
+deployment:
+  mode: remote
+  endpoint: https://mcp.datarails.com/mcp
+  verified: probed
+  probe: gated
+  checked: '2026-08-12'
+  source: catalog MCP census

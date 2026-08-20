@@ -36,6 +36,21 @@ tags:
 - Business Intelligence
 - Reporting
 - Data Integration
+- MCP
+- Artificial Intelligence
+- Excel
+- Software-as-a-Service
+tags_raw:
+- Company
+- FP&A
+- Financial Planning
+- Finance
+- Accounting
+- Budgeting
+- Forecasting
+- Business Intelligence
+- Reporting
+- Data Integration
 - Model Context Protocol
 - Artificial Intelligence
 - Excel
@@ -56,6 +71,12 @@ apis:
   humanURL: https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
   baseURL: https://mcp.datarails.com/mcp
   tags:
+  - MCP
+  - Artificial Intelligence
+  - Financial Data
+  - FP&A
+  - Authentication
+  tags_raw:
   - Model Context Protocol
   - Artificial Intelligence
   - Financial Data

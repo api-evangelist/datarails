@@ -17,6 +17,19 @@ description: >-
   operation is the Data Gateway Service file-upload endpoint used to push CSV
   and Excel files into a Filebox.
 url: https://raw.githubusercontent.com/api-evangelist/datarails/refs/heads/main/apis.yml
+deliveryModel:
+  model: open-core
+  license: MIT
+  open_source: true
+  commercial: true
+  callable_host: false
+  label: Open core · an OSS project plus a commercial hosted product
+  confidence: high
+  source:
+  - license
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.datarails.com/wp-content/uploads/2024/10/datarails-logo-1.png
 x-type: company
 x-source: harvest:secondary-market

@@ -116,6 +116,8 @@ apis:
     https://support.datarails.com/hc/en-us/articles/25849710214556-Datarails-FinanceOS-MCP-Server-Technical-Documentation
   baseURL: https://mcp.datarails.com/mcp
   tags:
+  - Authentication
+  tags_raw:
   - Oauth
   properties:
   - type: OpenAPI

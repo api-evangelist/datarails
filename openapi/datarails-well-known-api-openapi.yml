@@ -1,0 +1,31 @@
+openapi: 3.2.0
+info:
+  title: Datarails Finance OS MCP Server .well Known API
+  version: 3.0.0
+tags:
+- name: .well Known
+paths:
+  /.well-known/oauth-protected-resource:
+    get:
+      summary: Protected Resource Metadata
+      operationId: protected_resource_metadata__well_known_oauth_protected_resource_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - .well Known
+  /.well-known/openid-configuration:
+    get:
+      summary: Openid Configuration
+      operationId: openid_configuration__well_known_openid_configuration_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+      - .well Known

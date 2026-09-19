@@ -169,6 +169,8 @@ apis:
     https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation
   baseURL: https://app.datarails.com/api/v1
   tags:
+  - Authentication
+  tags_raw:
   - Oauth
   properties:
   - type: OpenAPI

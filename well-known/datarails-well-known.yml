@@ -1,104 +1,109 @@
-generated: '2026-08-01'
+generated: '2026-09-19'
 method: searched
 source: https://mcp.datarails.com/.well-known/
-description: >-
-  Well-known discovery surface probed across every Datarails host found in
-  apis.yml. Only the FinanceOS MCP host (mcp.datarails.com) serves discovery
-  documents; the marketing, application and support hosts return 404 for every
-  /.well-known/ path. No security.txt (RFC 9116), no api-catalog (RFC 9727),
+description: Well-known discovery surface probed across every Datarails host found in apis.yml. Only the
+  FinanceOS MCP host (mcp.datarails.com) serves discovery documents; the marketing, application and support
+  hosts return 404 for every /.well-known/ path. No security.txt (RFC 9116), no api-catalog (RFC 9727),
   no ai-plugin.json and no A2A agent card were found on any host.
 hosts_probed:
-  - https://mcp.datarails.com
-  - https://app.datarails.com
-  - https://www.datarails.com
-  - https://datarails.com
-documents:
-  - host: mcp.datarails.com
-    path: /.well-known/oauth-authorization-server
-    spec: RFC 8414
-    status: 200
-    file: datarails-oauth-authorization-server.json
-  - host: mcp.datarails.com
-    path: /.well-known/oauth-protected-resource
-    spec: RFC 9728
-    status: 200
-    file: datarails-oauth-protected-resource.json
-  - host: mcp.datarails.com
-    path: /.well-known/oauth-protected-resource/mcp
-    spec: RFC 9728 (resource-scoped; advertised in the 401 WWW-Authenticate header)
-    status: 200
-    file: datarails-oauth-protected-resource.json
-    note: >-
-      Same body as the unscoped document except authorization_servers carries a
-      trailing slash (https://mcp.datarails.com/). Not saved separately.
-  - host: mcp.datarails.com
-    path: /.well-known/openid-configuration
-    spec: OpenID Connect Discovery 1.0
-    status: 200
-    file: datarails-openid-configuration.json
-  - host: mcp.datarails.com
-    path: /.well-known/security.txt
-    status: 404
-  - host: mcp.datarails.com
-    path: /.well-known/api-catalog
-    status: 404
-  - host: mcp.datarails.com
-    path: /.well-known/ai-plugin.json
-    status: 404
-  - host: mcp.datarails.com
-    path: /.well-known/agent-card.json
-    status: 404
-  - host: mcp.datarails.com
-    path: /.well-known/agent.json
-    status: 404
-  - host: app.datarails.com
-    path: /.well-known/security.txt
-    status: 404
-  - host: app.datarails.com
-    path: /.well-known/openid-configuration
-    status: 404
-  - host: app.datarails.com
-    path: /.well-known/oauth-authorization-server
-    status: 404
-  - host: app.datarails.com
-    path: /.well-known/api-catalog
-    status: 404
-  - host: app.datarails.com
-    path: /.well-known/agent-card.json
-    status: 404
-  - host: app.datarails.com
-    path: /.well-known/agent.json
-    status: 404
-  - host: www.datarails.com
-    path: /.well-known/security.txt
-    status: 404
-  - host: www.datarails.com
-    path: /.well-known/api-catalog
-    status: 404
-  - host: www.datarails.com
-    path: /.well-known/agent-card.json
-    status: 404
-  - host: www.datarails.com
-    path: /.well-known/agent.json
-    status: 404
-  - host: datarails.com
-    path: /.well-known/security.txt
-    status: 404
-  - host: datarails.com
-    path: /.well-known/agent-card.json
-    status: 404
-  - host: datarails.com
-    path: /.well-known/agent.json
-    status: 404
+- https://mcp.datarails.com
+- https://app.datarails.com
+- https://www.datarails.com
+- https://datarails.com
 other_discovery:
-  - path: /llms.txt
-    host: www.datarails.com
-    status: 200
-    file: llms/datarails-llms.txt
-  - path: /openapi.json
-    host: mcp.datarails.com
-    status: 200
-    file: openapi/datarails-financeos-mcp-openapi.json
+- path: /llms.txt
+  host: www.datarails.com
+  status: 200
+  file: llms/datarails-llms.txt
+- path: /openapi.json
+  host: mcp.datarails.com
+  status: 200
+  file: openapi/datarails-financeos-mcp-openapi.json
 x-evidence:
   fetched: '2026-08-01'
   method: HTTP GET, redirects followed, browser user-agent
+hosts:
+- host: ''
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: datarails-oauth-authorization-server.json
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: datarails-oauth-protected-resource.json
+  - path: /.well-known/oauth-protected-resource/mcp
+    status: 200
+    file: datarails-oauth-protected-resource.json
+    note: Same body as the unscoped document except authorization_servers carries a trailing slash (https://mcp.datarails.com/).
+      Not saved separately.
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: datarails-openid-configuration.json
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://mcp.datarails.com
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: datarails-mcp-oauth-protected-resource.json
+    bytes: 137
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: datarails-mcp-oauth-authorization-server.json
+    bytes: 622
+  path_echo_control: passed
+x-shape-fix:
+  converted: '2026-08-20'
+  from: documents
+  note: Rewritten into hosts[] -> documents[], the only shape well_known_docs() in score.rb reads. A served
+    .well-known surface recorded in any other shape scores as absent.
+x-mcp-probe:
+  probed: '2026-09-19'
+  issue: roadmap#321, roadmap#337
+  documents:
+  - host: https://mcp.datarails.com
+    path: /.well-known/oauth-protected-resource
+    file: datarails-mcp-oauth-protected-resource.json
+  - host: https://mcp.datarails.com
+    path: /.well-known/oauth-authorization-server
+    file: datarails-mcp-oauth-authorization-server.json
+  validated_on: resource (RFC 9728) / issuer (RFC 8414, OIDC)
+  negative_control: one per host; a 2xx JSON object at an impossible path discards the host
+note: 'MCP-host OAuth discovery added 2026-09-19 (roadmap#321/#337): the harvest visits a provider''s
+  primary hosts, and RFC 9728 protected-resource metadata lives on the MCP host, so these documents existed
+  and were invisible to the scorer. Fetched live and validated on `resource`/`issuer`; one negative control
+  per host.'

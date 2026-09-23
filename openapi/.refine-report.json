@@ -1,0 +1,38 @@
+{
+  "provider": "datarails",
+  "sources": [
+    "_original/datarails-financeos-mcp-openapi.json"
+  ],
+  "outputs": [
+    "datarails-well-known-api-openapi.yml",
+    "datarails-health-api-openapi.yml",
+    "datarails-oauth-api-openapi.yml",
+    "datarails-ready-api-openapi.yml"
+  ],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "datarails-financeos-mcp-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "datarails-financeos-mcp-openapi.json: tagged paths GET /health -> Health",
+    "datarails-financeos-mcp-openapi.json: tagged paths GET /.well-known/oauth-protected-resource -> .well Known",
+    "datarails-financeos-mcp-openapi.json: tagged paths GET /.well-known/openid-configuration -> .well Known",
+    "datarails-financeos-mcp-openapi.json: tagged paths GET /oauth/callback -> Oauth",
+    "datarails-financeos-mcp-openapi.json: tagged paths GET /ready -> Ready",
+    "datarails-financeos-mcp-openapi.json: declared missing tag: .well Known",
+    "datarails-financeos-mcp-openapi.json: declared missing tag: Health",
+    "datarails-financeos-mcp-openapi.json: declared missing tag: Oauth",
+    "datarails-financeos-mcp-openapi.json: declared missing tag: Ready",
+    "superseded outputs removed: datarails-o-auth-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 5 total)"
+  ],
+  "skipped": [
+    "datarails-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "datarails-o-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "datarails-ready-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "datarails-well-known-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

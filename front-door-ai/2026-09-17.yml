@@ -1,0 +1,27 @@
+# Front Door AI Index — datarails — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: datarails
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.datarails.com
+  final_host: www.datarails.com
+  ownership: own
+  owner: datarails
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 37
+  host_score: 37
+  density: 26.39
+  words: 1402
+  tiers:
+    agentic: 0
+    core: 36
+    model: 1
+  ambiguous: 1
+  top_terms:
+    AI: 36
+    Claude: 1
+    agent: 1

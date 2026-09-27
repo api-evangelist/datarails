@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Datarails Finance OS MCP Server OAUTH API
+  title: Datarails Finance OS MCP Server OAuth API
   version: 3.0.0
 tags:
 - name: OAuth
@@ -59,15 +59,6 @@ paths:
       - OAuth
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     ValidationError:
       properties:
         loc:
@@ -94,3 +85,12 @@ components:
       - msg
       - type
       title: ValidationError
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError

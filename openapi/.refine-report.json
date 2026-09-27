@@ -9,9 +9,7 @@
     "datarails-oauth-api-openapi.yml",
     "datarails-ready-api-openapi.yml"
   ],
-  "archived": [
-    "deleted 1 superseded output(s) from the previous generation"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
@@ -26,12 +24,11 @@
     "datarails-financeos-mcp-openapi.json: declared missing tag: Health",
     "datarails-financeos-mcp-openapi.json: declared missing tag: Oauth",
     "datarails-financeos-mcp-openapi.json: declared missing tag: Ready",
-    "superseded outputs removed: datarails-o-auth-api-openapi.yml",
-    "apis.yml register: written (+1 apis, 5 total)"
+    "apis.yml register: already-registered"
   ],
   "skipped": [
     "datarails-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "datarails-o-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "datarails-oauth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "datarails-ready-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "datarails-well-known-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]

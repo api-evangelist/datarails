@@ -2,13 +2,26 @@
   "repo": "datarails",
   "feeds": [
     {
-      "source": "https://support.datarails.com/hc/en-us",
-      "feed_url": "https://support.datarails.com/hc/en-us",
+      "source": "https://www.datarails.com/blog/",
+      "feed_url": "https://www.datarails.com/blog/feed/",
+      "title": "",
+      "saved": 1,
+      "method": "discovered"
+    },
+    {
+      "source": "https://www.datarails.com/feed/",
+      "feed_url": "https://www.datarails.com/feed/",
       "title": "",
       "saved": 0,
-      "method": "none"
+      "method": "feed"
+    },
+    {
+      "source": "https://support.datarails.com/hc/en-us",
+      "feed_url": "",
+      "saved": 0,
+      "skipped": "community-shaped; a vendor feed already saved this run (roadmap#239)"
     }
   ],
-  "post_count": 0,
-  "fetched": "2026-10-03T12:30:02Z"
+  "post_count": 1,
+  "fetched": "2026-10-10T13:15:00Z"
 }

@@ -64,46 +64,144 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Datarails is an Excel-native financial planning and analysis (FP&A) platform for the office of the CFO,
-marketed as FinanceOS. It consolidates data from ERP, CRM, HRIS, billing and operational systems into a
-single finance data model, then lets finance teams budget, forecast, consolidate, report and build
-dashboards while continuing to work in Excel through the Datarails Flex add-in.
+Datarails is an Excel-native financial planning and analysis (FP&A) platform for the office of the CFO, marketed as FinanceOS. It consolidates data from ERP, CRM, HRIS, billing and operational systems into a single finance data model, then lets finance teams budget, forecast, consolidate, report and build dashboards while continuing to work in Excel through the Datarails Flex add-in. Its API surface is deliberately narrow and unusually agent-first: the primary programmatic interface is a hosted Model Context Protocol server at mcp.datarails.com, secured with OAuth 2.1 and PKCE, exposing roughly two dozen read-only tools for discovering data models, profiling fields, running filtered queries and asynchronous aggregations, and extracting validated financials into Excel. Datarails also ships a first-party Claude Code plugin carrying nineteen published Agent Skills, plus connectors for ChatGPT, Microsoft 365 Copilot and Lovable. The only documented conventional REST operation is the Data Gateway Service file-upload endpoint used to push CSV and Excel files into a Filebox.
 
-- Website: https://www.datarails.com/
-- Help center: https://support.datarails.com/hc/en-us
-- GitHub: https://github.com/Datarails
-- Status: https://datarails.statuspage.io/
-- Trust center: https://trust.datarails.com/
+**Areas:** Company · FP&A · Financial Planning · Finance · Accounting · Budgeting · Forecasting · Business Intelligence · Reporting · Data Integration · MCP · Artificial Intelligence
 
-## API surface
+## Datarails on APIs.io
 
-Datarails is an agent-first API provider. Its primary programmatic interface is not REST.
+Everything profiled for Datarails is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/datarails/](https://apis.io/providers/datarails/)** — or go straight to one of the APIs or properties below.
 
-| Surface | Endpoint | Auth |
-|---|---|---|
-| Datarails FinanceOS MCP Server | `https://mcp.datarails.com/mcp` | OAuth 2.1 + PKCE (S256), dynamic client registration |
-| Data Gateway Service (file upload) | `POST https://app.datarails.com/api/v1/fileboxes/upload_file` | HTTP Basic (base64 user:password) |
+### APIs (5)
 
-The MCP server exposes roughly two dozen **read-only** tools across three data-access layers — business
-metrics, aliased tables, and raw by-id — for discovering data models, profiling fields, running filtered
-queries and asynchronous aggregations, and extracting validated financials into Excel. Datarails
-documents that the MCP connection cannot create, update or delete records.
+- [Datarails Data Gateway Service (DGS)](https://apis.io/apis/datarails/data-gateway-service/) — REST file-upload endpoint used to push a CSV or Excel file into a Datarails Filebox. Authenticated with HTTP Basic using a base64-encoded Datarails sync…
+- [Datarails Health API](https://apis.io/apis/datarails/datarails-health-api/) — The Health API from Datarails — 1 operation(s) for health.
+- [Datarails Ready API](https://apis.io/apis/datarails/datarails-ready-api/) — The Ready API from Datarails — 1 operation(s) for ready.
+- [Datarails .well Known API](https://apis.io/apis/datarails/datarails-well-known-api/) — The .well Known API from Datarails — 2 operation(s) for .well known.
+- [Datarails OAUTH API](https://apis.io/apis/datarails/datarails-oauth-api/) — The Oauth API from Datarails — 1 operation(s) for oauth.
 
-A real OpenAPI 3.1.0 document is served at `https://mcp.datarails.com/openapi.json`, but it describes only
-the MCP server's own health, readiness and OAuth endpoints — the data capability is not in it. See
-`mcp/datarails-tool-crosswalk.yml` for that divergence.
+### Published properties
 
-## Notable
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-- **Datarails publishes its own Agent Skills.** The first-party Claude Code plugin
-  (`Datarails/dr-claude-code-plugins-re`, MIT, v3.0.6) ships 19 `SKILL.md` files and 8 agents. They are
-  copied verbatim into `skills/` — nothing in that directory was authored on Datarails' behalf.
-- **Full OAuth discovery.** RFC 8414, RFC 9728 (including the resource-scoped path advertised in the 401
-  challenge), OIDC discovery, and RFC 7591 dynamic client registration are all live.
-- **One coarse scope.** The authorization server advertises exactly one scope, `datarails`. Least
-  privilege lives in Datarails' in-app permission model, not in OAuth.
-- **No A2A agent card**, no security.txt, no api-catalog, no AsyncAPI (there is no event surface), no
-  RFC 9457 errors, no client SDK in any language, and no published vulnerability disclosure program.
+#### MCP servers (1)
 
-Artifacts in this repo were produced by the API Evangelist enrichment pipeline. Provenance is recorded in
-each file's `method:` and `source:` frontmatter.
+Model Context Protocol servers that expose the API to agents.
+
+- [datarails-finance-os](https://apis.io/servers/datarails/datarails-finance-os/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Datarails Agentic Access](https://apis.io/agentic-access/datarails/datarails-agentic-access/)
+
+#### Collections (1)
+
+Postman and Open Collection request collections.
+
+- [Datarails Finance OS MCP Server](https://apis.io/collections/datarails/open-datarails-financeos-mcp/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Datarails Financeos Mcp Overlay](https://apis.io/overlays/datarails/datarails-financeos-mcp-overlay/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Datarails Authentication](https://apis.io/security/datarails/datarails-authentication/)
+- [Datarails Domain Security](https://apis.io/security/datarails/datarails-domain-security/)
+- [Datarails Trust Center](https://apis.io/security/datarails/datarails-trust-center/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Datarails Scopes](https://apis.io/scopes/datarails/datarails-scopes/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Datarails Plans](https://apis.io/plans/datarails/datarails-plans/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Datarails Rate Limits](https://apis.io/rate-limits/datarails/datarails-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.datarails.com/)
+- [Documentation](https://support.datarails.com/hc/en-us)
+- [Getting started](https://support.datarails.com/hc/en-us/articles/25873904696860-Getting-Started-with-Datarails-on-Claude-Desktop)
+- [API reference](https://support.datarails.com/hc/en-us/articles/14616773038620-Data-Gateway-Service-DGS-API-Documentation)
+- [Pricing](https://www.datarails.com/datarails-pricing/)
+- [Support](https://support.datarails.com/hc/en-us)
+- [Blog](https://www.datarails.com/blog/)
+- [Compliance](https://trust.datarails.com/)
+- [Terms of service](https://www.datarails.com/terms-of-service/)
+- [Privacy policy](https://www.datarails.com/privacy-policy/)
+- [GitHub](https://github.com/Datarails)
+- [Status](https://datarails.statuspage.io/)
+
+## API Evangelist rating
+
+**Kin Score 55.3** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 75.0 |
+| Contract quality | 35.2 |
+| Contract governance | 18.2 |
+| Operational transparency | 55.3 |
+| Developer ergonomics | 61.9 |
+| Access clarity | 85.5 |
+
+**Agent readiness 57.7** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | na |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | na |
+| Error Semantics | derived (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | yes |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | na |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 36.4** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/datarails/](https://apis.io/providers/datarails/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Datarails: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/datarails/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
